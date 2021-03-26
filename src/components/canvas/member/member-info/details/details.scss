@@ -1,0 +1,66 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.details {
+  $this: &;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  white-space: nowrap;
+  padding-left: 20px;
+  margin-left: 20px;
+  border-left: 1px solid $light-grey-color;
+  @include transition(padding, opacity, margin);
+
+  &_collapsed {
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+  }
+
+  &__item {
+    &:not(&:last-child) {
+      margin-bottom: 10px;
+      @include transition(margin);
+
+      #{$this}_collapsed & {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__item-caption {
+    font-size: $font-size-xs;
+    margin-bottom: 4px;
+    color: $grey-color;
+    @include transition(font-size, margin);
+
+    #{$this}_collapsed & {
+      margin-bottom: 0;
+      font-size: 0;
+    }
+  }
+
+  &__item-value {
+    font-size: $font-size-s;
+    font-weight: bold;
+    color: $dark-grey-color;
+    @include transition(font-size);
+
+    #{$this}_collapsed & {
+      font-size: 0;
+    }
+  }
+
+  &__item-addition {
+    color: $grey-color;
+    font-size: $font-size-xs;
+    font-weight: normal;
+    @include transition(font-size);
+
+    #{$this}_collapsed & {
+      font-size: 0;
+    }
+  }
+}

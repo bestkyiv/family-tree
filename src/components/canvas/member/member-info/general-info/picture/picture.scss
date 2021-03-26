@@ -1,0 +1,32 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.picture {
+  overflow: hidden;
+  width: $member-picture-width;
+  height: $member-picture-height;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  background-image: url('./images/default.jpg');
+  background-size: cover;
+  background-position: center;
+  @include transition(width, height, margin);
+
+  &_collapsed {
+    width: 0;
+    height: 0;
+    margin: 0;
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    @include transition(opacity);
+
+    &_loaded {
+      opacity: 1;
+    }
+  }
+}

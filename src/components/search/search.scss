@@ -1,0 +1,36 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.search {
+  position: absolute;
+  z-index: 10;
+  top: 40px;
+  left: 40px;
+  box-shadow: $shadow;
+  min-width: 250px;
+
+  &__input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid $lighter-grey-color;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: $font-size-s;
+    color: $dark-grey-color;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  @include forMobile {
+    top: 15px;
+    left: 15px;
+    width: calc(100% - 30px);
+  }
+
+  &__results {
+    max-height: 80vh;
+    overflow-y: scroll;
+  }
+}

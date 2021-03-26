@@ -1,0 +1,49 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.toggle-button {
+  $margin-bottom: 20px;
+
+  position: relative;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  font-size: $font-size-s;
+  font-weight: 500;
+  line-height: 16px;
+  border-radius: 50%;
+  background: $blue-color;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 10px;
+  @include transition(opacity, height, width, margin, font-size);
+
+  &_collapsed {
+    margin: 0;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    font-size: 0;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -$margin-bottom;
+    left: 50%;
+    width: 1px;
+    height: 0;
+    background: $lighter-grey-color;
+    opacity: 0;
+    @include transition(opacity, height);
+  }
+
+  &_on {
+    margin-bottom: $margin-bottom;
+
+    &::after {
+      opacity: 1;
+      height: 12px;
+    }
+  }
+}

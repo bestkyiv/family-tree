@@ -1,0 +1,20 @@
+.canvas {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: scroll;
+  cursor: grab;
+
+  &_grabbed {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  &__members-container {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+}

@@ -1,0 +1,51 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.member-info {
+  $this: &;
+
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  border-radius: 10px;
+  background: #fff;
+  margin: 0 20px;
+  padding: 0;
+  box-shadow: 0 0 0 #fff;
+  user-select: none;
+  @include transition(margin, padding, box-shadow);
+
+  &_collapsed {
+    margin: 0;
+    padding: 0;
+  }
+
+  &_details-shown {
+    cursor: default;
+    padding: 20px;
+    box-shadow: $shadow;
+    user-select: auto;
+  }
+
+  &__close-details-button {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    line-height: 15px;
+    overflow: hidden;
+    background: $lighter-grey-color;
+    color: #ffffff;
+    border-radius: 50%;
+    text-align: center;
+    font-size: $font-size-xs;
+    opacity: 0;
+    @include transition(width, height, opacity);
+
+    #{$this}_details-shown & {
+      width: 15px;
+      height: 15px;
+      opacity: 1;
+    }
+  }
+}

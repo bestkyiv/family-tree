@@ -1,0 +1,39 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.result {
+  position: relative;
+  cursor: pointer;
+  padding: 5px 10px;
+  background: #ffffff;
+  @include transition(background);
+
+  &:hover {
+    background-color: $light-grey-color;
+  }
+
+  &:first-child {
+    padding-top: 10px;
+  }
+
+  &:last-child {
+    padding-bottom: 10px;
+  }
+
+  b {
+    color: $blue-color;
+    font-weight: 700;
+  }
+
+  &__name {
+    font-size: $font-size-m;
+    color: $dark-grey-color;
+    text-transform: capitalize;
+  }
+
+  &__status {
+    font-size: $font-size-xs;
+    color: $grey-color;
+    margin-left: 5px;
+  }
+}

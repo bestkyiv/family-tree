@@ -1,0 +1,72 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.member {
+  padding: 20px;
+  border-right: 1px solid $light-grey-color;
+  &:last-child {
+    border: 0;
+  }
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  @include transition(padding, opacity);
+
+  &__children {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  &_has-parent {
+    $padding-top: 20px;
+
+    padding: $padding-top 0 0;
+    border: 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      height: 1px;
+      background: $lighter-grey-color;
+      top: 0;
+      width: 100%;
+    }
+
+    &:first-child::before {
+      left: 50%;
+      width: 50%;
+    }
+
+    &:last-child::before {
+      left: 0;
+      width: 50%;
+    }
+
+    &:only-child::before {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 1px;
+      height: $padding-top;
+      background: $lighter-grey-color;
+      left: 50%;
+      top: 0;
+      @include transition(height);
+    }
+  }
+
+  &_collapsed {
+    padding: 0;
+    opacity: 0;
+
+    &::before, &::after {
+      height: 0;
+    }
+  }
+}

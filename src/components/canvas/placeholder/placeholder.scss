@@ -1,0 +1,33 @@
+@import './src/config/style/mixins';
+
+.placeholder {
+  position: absolute;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: #ffffff;
+  @include hide();
+
+  &_visible {
+    @include show();
+  }
+
+  &__logo {
+    @keyframes rotate {
+      0% {transform: rotate(0)}
+      100% {transform: rotate(360deg)}
+    }
+
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    margin-top: -50px;
+    animation: rotate 2s linear infinite;
+  }
+}
