@@ -11,13 +11,11 @@ const propTypes = {
   recDate: PropTypes.instanceOf(Date),
   birthday: PropTypes.instanceOf(Date),
   family: PropTypes.string,
+  contacts: PropTypes.object,
   isCollapsed: PropTypes.bool,
 };
 
 const defaultProps = {
-  recDate: null,
-  birthday: null,
-  family: null,
   isCollapsed: false,
 }
 

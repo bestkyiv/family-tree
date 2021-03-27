@@ -15,9 +15,7 @@ const propTypes = {
   name: PropTypes.string.isRequired,
   status: statusesType.isRequired,
   active: PropTypes.bool,
-  recDate: PropTypes.instanceOf(Date),
-  birthday: PropTypes.instanceOf(Date),
-  family: PropTypes.string,
+  details: PropTypes.object.isRequired,
   hasParent: PropTypes.bool,
   highlighted: PropTypes.bool,
   isCollapsed: PropTypes.bool,
@@ -26,9 +24,6 @@ const propTypes = {
 
 const defaultProps = {
   active: false,
-  recDate: null,
-  birthday: null,
-  family: null,
   hasParent: false,
   isCollapsed: false,
   highlighted: false,
@@ -58,9 +53,7 @@ class Member extends Component {
       name,
       status,
       active,
-      recDate,
-      birthday,
-      family,
+      details,
       children,
       hasParent,
       highlighted,
@@ -82,10 +75,8 @@ class Member extends Component {
           picture={picture}
           name={name}
           status={status}
-          recDate={recDate}
-          birthday={birthday}
-          family={family}
           active={active}
+          details={details}
           highlighted={highlighted}
           isCollapsed={isCollapsed}
         />

@@ -19,10 +19,17 @@ const parseMembersSheetRow = (row, rowId) => ({
   status: row[membersSheet.columnsOrder.indexOf('status')],
   picture: formatPictureSrc(row[membersSheet.columnsOrder.indexOf('picture')]),
   active: row[membersSheet.columnsOrder.indexOf('active')] === "TRUE",
-  birthday: parseDate(row[membersSheet.columnsOrder.indexOf('birthday')]),
-  recDate: parseDate(row[membersSheet.columnsOrder.indexOf('recDate')]),
   parent: row[membersSheet.columnsOrder.indexOf('parent')],
-  family: row[membersSheet.columnsOrder.indexOf('family')],
+  details: {
+    birthday: parseDate(row[membersSheet.columnsOrder.indexOf('birthday')]),
+    recDate: parseDate(row[membersSheet.columnsOrder.indexOf('recDate')]),
+    family: row[membersSheet.columnsOrder.indexOf('family')],
+    contacts: {
+      email: row[membersSheet.columnsOrder.indexOf('email')],
+      telegram: row[membersSheet.columnsOrder.indexOf('telegram')],
+      phone: row[membersSheet.columnsOrder.indexOf('phone')],
+    }
+  }
 });
 
 export default parseMembersSheetRow;

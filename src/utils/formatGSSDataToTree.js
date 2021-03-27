@@ -2,9 +2,9 @@ import statuses from 'config/statuses';
 
 const statusesOrder = Object.values(statuses);
 const sortingRules = (child1, child2) => {
-  if (child1.recDate && child2.recDate)
-    if (child1.recDate.getTime() !== child2.recDate.getTime())
-      return child1.recDate > child2.recDate ? 1 : -1;
+  if (child1.details.recDate && child2.details.recDate)
+    if (child1.details.recDate.getTime() !== child2.details.recDate.getTime())
+      return child1.details.recDate > child2.details.recDate ? 1 : -1;
 
   const child1StatusIndex = statusesOrder.indexOf(child1.status);
   const child2StatusIndex = statusesOrder.indexOf(child2.status);
