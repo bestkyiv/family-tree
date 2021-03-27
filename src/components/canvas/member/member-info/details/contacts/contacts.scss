@@ -1,0 +1,18 @@
+@import './src/config/style/mixins';
+
+.contacts {
+  $this: &;
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+    @include transition(width, height, margin);
+
+    #{$this}_collapsed & {
+      width: 0;
+      height: 0;
+      margin: 0;
+    }
+  }
+}

@@ -5,6 +5,8 @@ import classnames from 'classnames';
 import howLongSince from 'utils/howLongSince';
 import formatDate from 'utils/formatDate';
 
+import Contacts from './contacts/contacts';
+
 import './details.scss';
 
 const propTypes = {
@@ -30,7 +32,7 @@ class Details extends Component {
   }
 
   render() {
-    const {isCollapsed} = this.props;
+    const {contacts, isCollapsed} = this.props;
 
     return (
       <div className={classnames('details', {'details_collapsed': isCollapsed})}>
@@ -46,6 +48,7 @@ class Details extends Component {
             </div>
           </div>
         ))}
+        <Contacts {...contacts} isCollapsed={isCollapsed}/>
       </div>
     );
   }
