@@ -12,6 +12,7 @@ import './details.scss';
 const propTypes = {
   recDate: PropTypes.instanceOf(Date),
   birthday: PropTypes.instanceOf(Date),
+  faculty: PropTypes.string,
   family: PropTypes.string,
   contacts: PropTypes.object,
   isCollapsed: PropTypes.bool,
@@ -57,6 +58,7 @@ class Details extends Component {
     const {
       recDate,
       birthday,
+      faculty,
       family,
     } = this.props;
 
@@ -77,6 +79,14 @@ class Details extends Component {
         capture: 'Рекрутмент',
         value: formatDate(recDate),
         addition: this.getTimeInBEST() + ' тому',
+      });
+    }
+
+    if (faculty) {
+      detailsItems.push({
+        key: 'faculty',
+        capture: 'Факультет',
+        value: faculty,
       });
     }
 

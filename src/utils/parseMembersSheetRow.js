@@ -23,6 +23,7 @@ const parseMembersSheetRow = (row, rowId) => ({
   details: {
     birthday: parseDate(row[membersSheet.columnsOrder.indexOf('birthday')]),
     recDate: parseDate(row[membersSheet.columnsOrder.indexOf('recDate')]),
+    faculty: row[membersSheet.columnsOrder.indexOf('faculty')],
     family: row[membersSheet.columnsOrder.indexOf('family')],
     contacts: {
       email: row[membersSheet.columnsOrder.indexOf('email')],
