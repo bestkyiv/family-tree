@@ -31,6 +31,7 @@ const Contacts = ({
         href={`https://${telegram}`}
         target="_blank"
         rel="noreferrer"
+        className="contacts__link"
       >
         <img src={telegramIcon} alt="Telegram" className="contacts__icon"/>
       </a>}
@@ -39,11 +40,15 @@ const Contacts = ({
         href={`mailto:${email}`}
         target="_blank"
         rel="noreferrer"
+        className="contacts__link"
       >
         <img src={emailIcon} alt="Email" className="contacts__icon"/>
       </a>}
     {phone &&
-      <a href={`tel:${phone}`}>
+      <a
+        href={`tel:${phone}`}
+        className="contacts__link"
+      >
         <img src={phoneIcon} alt="Phone" className="contacts__icon"/>
       </a>}
   </div>

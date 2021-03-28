@@ -11,7 +11,7 @@
     height: 0;
   }
 
-  a {
+  &__link {
     display: inline-block;
     margin-right: 5px;
     @include transition(margin);
