@@ -28,7 +28,7 @@ const Contacts = ({
   <div className={classnames('contacts', {'contacts_collapsed': isCollapsed})}>
     {telegram &&
       <a
-        href={`https://${telegram}`}
+        href={`https://t.me/${telegram.substring(1)}`}
         target="_blank"
         rel="noreferrer"
         className="contacts__link"
