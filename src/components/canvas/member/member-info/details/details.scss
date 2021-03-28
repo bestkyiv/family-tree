@@ -8,25 +8,24 @@
   flex-direction: column;
   justify-content: center;
   white-space: nowrap;
-  padding-left: 20px;
+  padding: 10px 10px 0 20px;
   margin-left: 20px;
   border-left: 1px solid $light-grey-color;
-  @include transition(padding, opacity, margin);
+  @include transition(padding, opacity, margin, border-width);
 
   &_collapsed {
     padding: 0;
     margin: 0;
     opacity: 0;
+    border-width: 0;
   }
 
   &__item {
-    &:not(&:last-child) {
-      margin-bottom: 10px;
-      @include transition(margin);
+    margin-bottom: 10px;
+    @include transition(margin);
 
-      #{$this}_collapsed & {
-        margin-bottom: 0;
-      }
+    #{$this}_collapsed & {
+      margin-bottom: 0;
     }
   }
 

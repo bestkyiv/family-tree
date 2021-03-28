@@ -63,14 +63,7 @@ class Canvas extends Component {
 
     return <Member
       key={member.id}
-      id={member.id}
-      picture={member.picture}
-      name={member.name}
-      status={member.status}
-      active={member.active}
-      recDate={member.recDate}
-      birthday={member.birthday}
-      family={member.family}
+      {...member}
       hasParent={hasParent}
       highlighted={highlightedMemberId === member.id}
       showChildren={highlightedMemberAncestors.includes(member.id)}

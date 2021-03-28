@@ -5,19 +5,20 @@ import classnames from 'classnames';
 import howLongSince from 'utils/howLongSince';
 import formatDate from 'utils/formatDate';
 
+import Contacts from './contacts/contacts';
+
 import './details.scss';
 
 const propTypes = {
   recDate: PropTypes.instanceOf(Date),
   birthday: PropTypes.instanceOf(Date),
+  faculty: PropTypes.string,
   family: PropTypes.string,
+  contacts: PropTypes.object,
   isCollapsed: PropTypes.bool,
 };
 
 const defaultProps = {
-  recDate: null,
-  birthday: null,
-  family: null,
   isCollapsed: false,
 }
 
@@ -32,7 +33,7 @@ class Details extends Component {
   }
 
   render() {
-    const {isCollapsed} = this.props;
+    const {contacts, isCollapsed} = this.props;
 
     return (
       <div className={classnames('details', {'details_collapsed': isCollapsed})}>
@@ -48,6 +49,7 @@ class Details extends Component {
             </div>
           </div>
         ))}
+        <Contacts {...contacts} isCollapsed={isCollapsed}/>
       </div>
     );
   }
@@ -56,6 +58,7 @@ class Details extends Component {
     const {
       recDate,
       birthday,
+      faculty,
       family,
     } = this.props;
 
@@ -76,6 +79,14 @@ class Details extends Component {
         capture: 'Рекрутмент',
         value: formatDate(recDate),
         addition: this.getTimeInBEST() + ' тому',
+      });
+    }
+
+    if (faculty) {
+      detailsItems.push({
+        key: 'faculty',
+        capture: 'Факультет',
+        value: faculty,
       });
     }
 

@@ -13,7 +13,7 @@
   &_with-activity-indicator::before {
     content: '';
     position: absolute;
-    top: 55%;
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
     margin-left: -$member-picture-width/2 + 12px;
@@ -23,13 +23,14 @@
     border-radius: 50%;
     background: $green-color;
     border: 3px solid #ffffff;
-    @include transition(width, height, margin);
+    @include transition(width, height, margin, top);
+  }
 
-    #{$this}_collapsed & {
-      width: 0;
-      height: 0;
-      margin-left: 0;
-    }
+  &_collapsed::before {
+    width: 0;
+    height: 0;
+    margin-left: 0;
+    top: 0;
   }
 
   &__name {

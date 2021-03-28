@@ -13,19 +13,13 @@ const propTypes = {
   picture: PropTypes.string,
   name: PropTypes.string.isRequired,
   status: statusesType.isRequired,
-  recDate: PropTypes.instanceOf(Date),
-  birthday: PropTypes.instanceOf(Date),
-  family: PropTypes.string,
+  details: PropTypes.object,
   active: PropTypes.bool,
   isCollapsed: PropTypes.bool,
   highlighted: PropTypes.bool,
 };
 
 const defaultProps = {
-  picture: null,
-  recDate: null,
-  birthday: null,
-  family: null,
   active: false,
   isCollapsed: false,
   highlighted: false,
@@ -58,9 +52,7 @@ class MemberInfo extends Component {
       picture,
       name,
       status,
-      recDate,
-      birthday,
-      family,
+      details,
       active,
       isCollapsed,
       highlighted,
@@ -93,9 +85,7 @@ class MemberInfo extends Component {
           handleClick={this.showDetails}
         />
         <Details
-          recDate={recDate}
-          birthday={birthday}
-          family={family}
+          {...details}
           isCollapsed={isCollapsed || !areDetailsShown}
         />
         <div
