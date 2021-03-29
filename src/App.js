@@ -2,106 +2,50 @@ import React, {Component} from 'react';
 
 import {membersSheet} from 'config/sheets';
 
-import {initGoogleApi, loadSheetData} from 'utils/googleApi';
+import {initGoogleApi, loadDataFromSpreadsheet} from 'utils/googleApi';
 import parseMembersSheetRow from 'utils/parseMembersSheetRow';
-import formatGSSDataToTree from 'utils/formatGSSDataToTree';
 
-import Search from 'components/search/search';
-import Canvas from 'components/canvas/canvas';
+import FamilyTree from 'components/family-tree/familyTree';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       membersList: [],
-      membersTree: [],
-      highlightedMemberId: null,
-      highlightedMemberAncestorsIds: [],
     };
   }
 
   componentDidMount() {
-    window.gapi.load('client', async () => {
-      await initGoogleApi();
-      this.loadMembersData();
-    });
+    this.loadMembersData(process.env.REACT_APP_GAPI_KEY, process.env.REACT_APP_SPREADSHEET_ID);
 
-    // Зняти виділення з мембера при будь-якому кліку
-    document.addEventListener('click', () => {
-      this.setState({highlightedMemberId: null});
-    });
-
-    document.addEventListener('touchstart', () => {
-      this.setState({highlightedMemberId: null});
-    });
   }
 
-  loadMembersData = () => {
-    loadSheetData({
-      sheet: membersSheet.name,
-      startRow: membersSheet.startRow,
-      rowWidth: membersSheet.columnsOrder.length,
-    }, (err, data) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
+  loadMembersData = (apiKey, spreadsheetId) => {
+    window.gapi.load('client', async () => {
+      await initGoogleApi(apiKey);
 
-      const parsedData = data.map(parseMembersSheetRow);
+      loadDataFromSpreadsheet({
+        spreadsheetId,
+        sheetName: membersSheet.name,
+        startRow: membersSheet.startRow,
+        rowWidth: membersSheet.columnsOrder.length,
+      }, (err, data) => {
+        if (err) {
+          console.log(err.message);
+          return;
+        }
 
-      this.setState({
-        membersList: parsedData,
-        membersTree: formatGSSDataToTree(parsedData),
+        this.setState({
+          membersList: data.map(parseMembersSheetRow),
+        });
       });
     });
   }
 
   render() {
-    const {
-      membersList,
-      membersTree,
-      highlightedMemberId,
-      highlightedMemberAncestorsIds,
-    } = this.state;
-
-    return (
-      <>
-        <Search
-          membersList={membersList}
-          highlightMember={this.highlightMember}
-        />
-        <Canvas
-          membersTree={membersTree}
-          highlightedMemberId={highlightedMemberId}
-          highlightedMemberAncestors={highlightedMemberAncestorsIds}
-        />
-      </>
-    );
-  }
-
-  highlightMember = id => {
-    this.setState({
-      highlightedMemberId: id,
-      highlightedMemberAncestorsIds: this.getHighlightedMemberAncestorsIds(id),
-    });
-  }
-
-  getHighlightedMemberAncestorsIds = id => {
     const {membersList} = this.state;
 
-    let currentMember = membersList.filter(member => member.id === id)[0];
-
-    if (!currentMember) return [];
-
-    const ancestorsIds = [];
-
-    while (currentMember.parent) {
-      const parentName = currentMember.parent;
-      currentMember = membersList.filter(member => member.name === parentName)[0];
-      ancestorsIds.push(currentMember.id);
-    }
-
-    return ancestorsIds;
+    return <FamilyTree membersList={membersList}/>;
   }
 }
 
