@@ -9,7 +9,7 @@ import parseMembersSheetRow from './utils/parseMembersSheetRow';
 
 import FamilyTree from './components/family-tree/familyTree';
 
-import 'index.css';
+import 'index.scss';
 
 class App extends Component {
   constructor(props) {
