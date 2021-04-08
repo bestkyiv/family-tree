@@ -1,4 +1,5 @@
 @import-normalize;
+@import './src/config/style/ui-variables';
 
 html {
   height: 100%;
@@ -9,6 +10,9 @@ body {
   height: 100%;
   margin: 0;
   font-family: Roboto, sans-serif;
+  font-size: $font-size-m;
+  line-height: 1.5;
+  color: $dark-grey-color;
 }
 
 #root {

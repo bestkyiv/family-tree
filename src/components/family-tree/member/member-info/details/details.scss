@@ -44,7 +44,6 @@
   &__item-value {
     font-size: $font-size-s;
     font-weight: bold;
-    color: $dark-grey-color;
     @include transition(font-size);
 
     #{$this}_collapsed & {
