@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 
 import formatGSSDataToTree from 'utils/formatGSSDataToTree';
 
-import Placeholder from './placeholder/placeholder';
+import Loader from 'components/loader/loader';
+
 import Search from './search/search';
 import Canvas from './canvas/canvas';
 import Member from './member/member';
@@ -34,7 +35,7 @@ class FamilyTree extends Component {
 
     return (
       <>
-        <Placeholder visible={!membersList.length}/>
+        {!membersList.length && <Loader />}
         <Search
           membersList={membersList}
           highlightMember={this.highlightMember}
