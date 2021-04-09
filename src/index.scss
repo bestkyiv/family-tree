@@ -18,3 +18,14 @@ body {
 #root {
   height: 100%;
 }
+
+input, button {
+  &:focus {
+    outline: none;
+  }
+}
+
+a {
+  color: $blue-color;
+  text-decoration: none;
+}

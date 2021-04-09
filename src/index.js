@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-// import '@testing-library/jest-dom';
 
 import {membersSheet} from './config/sheets';
 
@@ -8,6 +7,7 @@ import {initGoogleApi, loadDataFromSpreadsheet} from './utils/googleApi';
 import parseMembersSheetRow from './utils/parseMembersSheetRow';
 
 import FamilyTree from './components/family-tree/familyTree';
+import AccessLimiter from './components/access-limiter/accessLimiter';
 
 import 'index.scss';
 
@@ -17,19 +17,6 @@ class App extends Component {
     this.state = {
       membersList: [],
     };
-  }
-
-  componentDidMount = async () => {
-    this.loadMembersData(process.env.REACT_APP_GAPI_KEY, process.env.REACT_APP_SPREADSHEET_ID);
-
-    // const response = await fetch('https://bg0lx1fae5.execute-api.eu-central-1.amazonaws.com/default/best-members-link?password=ilovebest');
-    // const responseJson = await response.json();
-    //
-    // if (responseJson.hasOwnProperty('spreadsheetId') && responseJson.hasOwnProperty('apiKey')) {
-    //   const {spreadsheetId, apiKey} = responseJson;
-    //   this.loadMembersData(apiKey, spreadsheetId);
-    // } else
-    //   console.log(responseJson.error);
   }
 
   loadMembersData = (apiKey, spreadsheetId) => {
@@ -57,7 +44,13 @@ class App extends Component {
   render() {
     const {membersList} = this.state;
 
-    return <FamilyTree membersList={membersList}/>;
+    return (
+      <AccessLimiter
+        onAccessGranted={this.loadMembersData}
+      >
+        <FamilyTree membersList={membersList}/>
+      </AccessLimiter>
+    );
   }
 }
 
