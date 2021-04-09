@@ -11,6 +11,8 @@ import Loader from 'components/loader/loader';
 
 import './accessLimiter.scss';
 
+const QUESTIONS_AMOUNT = 3;
+
 const propTypes = {
   onAccessGranted: PropTypes.func.isRequired,
 };
@@ -31,16 +33,25 @@ class AccessLimiter extends Component {
   }
 
   componentDidMount() {
-    const urlParamsFromCookies = cookie.load('accessGranted');
+    const {onAccessGranted} = this.props;
 
-    if (urlParamsFromCookies) {
-      this.setState({
-        showChildren: true,
-        urlParams: atob(urlParamsFromCookies),
-      }, this.submit);
+    const gapiKey = cookie.load('gapiKey');
+    const spreadsheetId = cookie.load('spreadsheetId');
+
+    if (spreadsheetId && gapiKey) {
+      this.setState({showChildren: true});
+
+      onAccessGranted(gapiKey, spreadsheetId)
+        .catch(() => {
+          this.setState({showChildren: false});
+          this.loadRandomQuestions();
+
+          cookie.remove('gapiKey');
+          cookie.remove('spreadsheetId');
+        });
+    } else {
+      this.loadRandomQuestions();
     }
-
-    this.setState({questions: getRandomItemsFromArray(accessQuestions, 3)});
   }
 
   render() {
@@ -129,9 +140,24 @@ class AccessLimiter extends Component {
           Здається ти не бестік, тому я не можу дати тобі сюди доступ.
           Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> за допомогою.
         </div>
+        <button
+          type="button"
+          className="access-limiter__continue-button"
+          onClick={() => this.setState({
+            isSubmitted: false,
+            urlParams: '',
+            currentAnswer: '',
+            currentQuestion: 0,
+          })}
+          autoFocus
+        >
+          Спробувати ще раз
+        </button>
       </>
     );
   }
+
+  loadRandomQuestions = () => this.setState({questions: getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT)});
 
   handleInputChange = ({target}) => {
     this.setState({currentAnswer: target.value});
@@ -181,14 +207,8 @@ class AccessLimiter extends Component {
       onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
       this.setState({isAccessGranted: true});
 
-      cookie.save('accessGranted', btoa(urlParams));
-    } else if (cookie.load('accessGranted')) { // якщо була записана кука, але відповіді невірні
-      this.setState({
-        isSubmitted: false,
-        showChildren: false,
-        urlParams: '',
-      });
-      cookie.remove('accessGranted');
+      cookie.save('spreadsheetId', responseJson.spreadsheetId);
+      cookie.save('gapiKey', responseJson.apiKey);
     }
   }
 }
