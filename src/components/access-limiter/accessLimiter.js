@@ -140,6 +140,19 @@ class AccessLimiter extends Component {
           Здається ти не бестік, тому я не можу дати тобі сюди доступ.
           Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> за допомогою.
         </div>
+        <button
+          type="button"
+          className="access-limiter__continue-button"
+          onClick={() => this.setState({
+            isSubmitted: false,
+            urlParams: '',
+            currentAnswer: '',
+            currentQuestion: 0,
+          })}
+          autoFocus
+        >
+          Спробувати ще раз
+        </button>
       </>
     );
   }
