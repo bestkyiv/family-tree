@@ -20,23 +20,28 @@ class App extends Component {
   }
 
   loadMembersData = (apiKey, spreadsheetId) => {
-    window.gapi.load('client', async () => {
-      await initGoogleApi(apiKey);
+    return new Promise((resolve, reject) => {
+      window.gapi.load('client', () => {
+        initGoogleApi(apiKey)
+          .then(() => {
+            loadDataFromSpreadsheet({
+              spreadsheetId,
+              sheetName: membersSheet.name,
+              startRow: membersSheet.startRow,
+              rowWidth: membersSheet.columnsOrder.length,
+            }, (err, data) => {
+              if (err) {
+                reject();
+                return;
+              }
 
-      loadDataFromSpreadsheet({
-        spreadsheetId,
-        sheetName: membersSheet.name,
-        startRow: membersSheet.startRow,
-        rowWidth: membersSheet.columnsOrder.length,
-      }, (err, data) => {
-        if (err) {
-          console.log(err.message);
-          return;
-        }
+              this.setState({
+                membersList: data.map(parseMembersSheetRow),
+              });
 
-        this.setState({
-          membersList: data.map(parseMembersSheetRow),
-        });
+              resolve();
+            });
+          }, reject);
       });
     });
   }
