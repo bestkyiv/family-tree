@@ -16,11 +16,6 @@
     padding: 10px;
     border-radius: 5px;
     font-size: $font-size-s;
-    color: $dark-grey-color;
-
-    &:focus {
-      outline: none;
-    }
   }
 
   @include forMobile {

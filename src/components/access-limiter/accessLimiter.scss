@@ -1,0 +1,56 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.access-limiter {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+
+  &__container {
+    position: relative;
+    overflow: hidden;
+    box-shadow: $shadow;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 320px;
+    min-height: 100px;
+  }
+
+  &__answer-container {
+    display: flex;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid $light-grey-color;
+  }
+
+  &__answer-input {
+    flex-grow: 1;
+    box-sizing: border-box;
+    border: 1px solid $lighter-grey-color;
+    padding: 5px;
+    border-radius: 5px 0 0 5px;
+    font-size: $font-size-s;
+  }
+
+  &__button {
+    border: 1px solid $lighter-grey-color;
+    border-left: 0;
+    border-radius: 0 5px 5px 0;
+  }
+
+  &__title {
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  &__description {
+    font-size: $font-size-s;
+  }
+
+  &__continue-button {
+    margin-top: 15px;
+    cursor: pointer;
+  }
+}

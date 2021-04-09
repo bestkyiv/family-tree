@@ -1,0 +1,198 @@
+import React, {Component} from 'react';
+import cookie from 'react-cookies'
+import PropTypes from 'prop-types';
+
+import accessQuestions from 'config/accessQuestions';
+import {checkIfBestieEndpoint, adminTelegramUrl} from 'config/links';
+
+import getRandomItemsFromArray from 'utils/getRandomItemsFromArray';
+
+import Loader from 'components/loader/loader';
+
+import './accessLimiter.scss';
+
+const propTypes = {
+  onAccessGranted: PropTypes.func.isRequired,
+};
+
+class AccessLimiter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      questions: [],
+      currentQuestion: 0,
+      currentAnswer: '',
+      urlParams: '',
+      isSubmitted: false, // чи був надісланий запит на бекенд
+      isAccessGranted: false, // чи бекенд надав доступ
+      isLoading: false, // чи запит обробляється
+      showChildren: false,
+    };
+  }
+
+  componentDidMount() {
+    const urlParamsFromCookies = cookie.load('accessGranted');
+
+    if (urlParamsFromCookies) {
+      this.setState({
+        showChildren: true,
+        urlParams: atob(urlParamsFromCookies),
+      }, this.submit);
+    }
+
+    this.setState({questions: getRandomItemsFromArray(accessQuestions, 3)});
+  }
+
+  render() {
+    const {children} = this.props;
+    const {showChildren} = this.state;
+
+    return showChildren ? children : (
+      <div className="access-limiter">
+        <div className="access-limiter__container">
+          {this.getContentVariant()}
+        </div>
+      </div>
+    );
+  }
+
+  getContentVariant() {
+    const {
+      questions,
+      currentQuestion,
+      currentAnswer,
+      isSubmitted,
+      isAccessGranted,
+      isLoading,
+    } = this.state;
+
+    if (isLoading) {
+      return <Loader size="s"/>;
+    }
+
+    if (!isSubmitted) {
+      return (
+        <>
+          {questions.length > 0 && (
+            <div className="access-limiter__title">{questions[currentQuestion].value}</div>
+          )}
+          <div className="access-limiter__answer-container">
+            <input
+              type="text"
+              className="access-limiter__answer-input"
+              onChange={this.handleInputChange}
+              onKeyPress={e => e.key === 'Enter' && currentAnswer ? this.handleButtonClick() : null}
+              value={currentAnswer}
+              autoFocus
+            />
+            <button
+              type="button"
+              className="access-limiter__button"
+              disabled={!currentAnswer}
+              onClick={this.handleButtonClick}
+            >
+              {currentQuestion === questions.length - 1 ? 'Завершити' : 'Далі'}
+            </button>
+          </div>
+          <div className="access-limiter__description">
+            Доступ до цієї сторінки мають лише бестіки ЛБГ Київ, а тебе я не знаю.
+            Дай відповідь на декілька запитань, які знає кожен мембер нашої групи і тоді я впущу тебе.
+          </div>
+        </>
+      );
+    }
+
+    if (isAccessGranted) {
+      return (
+        <>
+          <div className="access-limiter__title">Вітаю, бестік!</div>
+          <div className="access-limiter__description">
+            Тут ти зможеш знайти інформацію про себе, усіх своїх предків, нащадків, братів та сестер.
+            Якщо ти раптом знайшов неточності або відсутність якоїсь інформації, то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> або будь-кому з HR відділу.
+          </div>
+          <button
+            type="button"
+            className="access-limiter__continue-button"
+            onClick={() => this.setState({showChildren: true})}
+            autoFocus
+          >
+            Подивитись дерево
+          </button>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <div className="access-limiter__title">Упс!</div>
+        <div className="access-limiter__description">
+          Здається ти не бестік, тому я не можу дати тобі сюди доступ.
+          Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> за допомогою.
+        </div>
+      </>
+    );
+  }
+
+  handleInputChange = ({target}) => {
+    this.setState({currentAnswer: target.value});
+  }
+
+  handleButtonClick = () => {
+    const {
+      questions,
+      currentQuestion,
+      currentAnswer,
+    } = this.state;
+
+    this.setState(
+      prevState => ({
+        urlParams: `${prevState.urlParams}${currentQuestion ? '&' : ''}${questions[currentQuestion].id}=${encodeURIComponent(currentAnswer)}`
+      }),
+      currentQuestion === questions.length - 1
+        ? this.submit
+        : this.showNextQuestion
+    );
+  }
+
+  showNextQuestion = () => {
+    this.setState(prevState => {
+      return {
+        currentQuestion: prevState.currentQuestion + 1,
+        currentAnswer: '',
+      }
+    });
+  }
+
+  submit = async () => {
+    const {onAccessGranted} = this.props;
+    const {urlParams} = this.state
+
+    this.setState({
+      isSubmitted: true,
+      isLoading: true,
+    });
+
+    const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
+    const responseJson = await response.json();
+
+    this.setState({isLoading: false});
+
+    if (responseJson.hasOwnProperty('apiKey') && responseJson.hasOwnProperty('spreadsheetId')) {
+      onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
+      this.setState({isAccessGranted: true});
+
+      cookie.save('accessGranted', btoa(urlParams));
+    } else if (cookie.load('accessGranted')) { // якщо була записана кука, але відповіді невірні
+      this.setState({
+        isSubmitted: false,
+        showChildren: false,
+        urlParams: '',
+      });
+      cookie.remove('accessGranted');
+    }
+  }
+}
+
+AccessLimiter.propTypes = propTypes;
+
+export default AccessLimiter;
