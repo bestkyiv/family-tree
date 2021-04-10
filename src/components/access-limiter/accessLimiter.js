@@ -12,6 +12,7 @@ import Loader from 'components/loader/loader';
 import './accessLimiter.scss';
 
 const QUESTIONS_AMOUNT = 3;
+const COOKIES_DURATION_IN_DAYS = 180;
 
 const propTypes = {
   onAccessGranted: PropTypes.func.isRequired,
@@ -207,8 +208,11 @@ class AccessLimiter extends Component {
       onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
       this.setState({isAccessGranted: true});
 
-      cookie.save('spreadsheetId', responseJson.spreadsheetId);
-      cookie.save('gapiKey', responseJson.apiKey);
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
+
+      cookie.save('spreadsheetId', responseJson.spreadsheetId, {expires: expirationDate});
+      cookie.save('gapiKey', responseJson.apiKey, {expires: expirationDate});
     }
   }
 }
