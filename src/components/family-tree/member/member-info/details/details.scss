@@ -31,12 +31,10 @@
 
   &__item-caption {
     font-size: $font-size-xs;
-    margin-bottom: 4px;
     color: $grey-color;
-    @include transition(font-size, margin);
+    @include transition(font-size);
 
     #{$this}_collapsed & {
-      margin-bottom: 0;
       font-size: 0;
     }
   }
