@@ -14,16 +14,18 @@ const loadDataFromSpreadsheet = ({
   startRow = 1,
   startCol = 1,
   rowWidth = 1,
-}, callback) => {
+}) => {
+  return new Promise((resolve, reject) => {
     const range = `${sheetName}!${getColumnLetterById(startCol)}${startRow}:${getColumnLetterById(rowWidth)}`;
 
-  window.gapi.client.load('sheets', 'v4', () => {
-    window.gapi.client.sheets.spreadsheets.values
-      .get({spreadsheetId, range})
-      .then(
-        response => callback(null, response.result.values),
-        response => callback(response.result.error)
-      );
+    window.gapi.client.load('sheets', 'v4', () => {
+      window.gapi.client.sheets.spreadsheets.values
+        .get({spreadsheetId, range})
+        .then(
+          response => resolve(response.result.values),
+          response => reject(response.result.error)
+        );
+    });
   });
 }
 

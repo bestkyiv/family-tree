@@ -10,6 +10,7 @@ import Contacts from './contacts/contacts';
 import './details.scss';
 
 const propTypes = {
+  membership: PropTypes.object,
   recDate: PropTypes.instanceOf(Date),
   birthday: PropTypes.instanceOf(Date),
   faculty: PropTypes.string,
@@ -44,8 +45,19 @@ class Details extends Component {
           >
             <div className="details__item-caption">{item.capture}</div>
             <div className="details__item-value">
-              {item.value}
-              {item.addition && <span className="details__item-addition"> ({item.addition})</span>}
+              {Array.isArray(item.value)
+                ? item.value.map(part => {
+                    const value = Array.isArray(part) ? part[0] : part;
+                    const addition = Array.isArray(part) ? part[1] : null;
+                    return (
+                      <span key={value}>
+                        {value}
+                        {addition && <span className="details__item-addition"> ({addition})</span>}
+                      </span>
+                    );
+                  }).reduce((acc, x) => acc === null ? x : [acc, ', ', x], null)
+                : (<>{item.value} {item.addition && <span className="details__item-addition"> ({item.addition})</span>}</>)
+              }
             </div>
           </div>
         ))}
@@ -56,6 +68,7 @@ class Details extends Component {
 
   getDetailsItems = () => {
     const {
+      membership,
       recDate,
       birthday,
       faculty,
@@ -63,6 +76,32 @@ class Details extends Component {
     } = this.props;
 
     const detailsItems = [];
+
+    if (membership.board) {
+      detailsItems.push({
+        key: 'board',
+        capture: 'Board',
+        value: membership.board,
+      });
+    }
+
+    if (membership.projects.length > 0) {
+      membership.projects.forEach((project, projectId) => {
+        detailsItems.push({
+          key: `project${projectId}`,
+          capture: project.name,
+          value: project.position,
+        });
+      });
+    }
+
+    if (membership.departments.length > 0) {
+      detailsItems.push({
+        key: 'departments',
+        capture: 'Відділи та команди',
+        value: membership.departments,
+      });
+    }
 
     if (birthday) {
       detailsItems.push({

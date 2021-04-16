@@ -43,12 +43,14 @@ class AccessLimiter extends Component {
       this.setState({showChildren: true});
 
       onAccessGranted(gapiKey, spreadsheetId)
-        .catch(() => {
+        .catch(errorMessage => {
           this.setState({showChildren: false});
           this.loadRandomQuestions();
 
           cookie.remove('gapiKey');
           cookie.remove('spreadsheetId');
+
+          throw new Error(errorMessage);
         });
     } else {
       this.loadRandomQuestions();
