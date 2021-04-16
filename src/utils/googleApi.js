@@ -1,4 +1,12 @@
-const getLetterById = letterId => (letterId + 9).toString(36).toUpperCase();
+const getColumnLetterById = id => {
+  let temp, letter = '';
+  while (id > 0) {
+    temp = (id - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    id = (id - temp - 1) / 26;
+  }
+  return letter;
+}
 
 const loadDataFromSpreadsheet = ({
   spreadsheetId,
@@ -7,7 +15,7 @@ const loadDataFromSpreadsheet = ({
   startCol = 1,
   rowWidth = 1,
 }, callback) => {
-  const range = `${sheetName}!${getLetterById(startCol)}${startRow}:${getLetterById(rowWidth)}`;
+    const range = `${sheetName}!${getColumnLetterById(startCol)}${startRow}:${getColumnLetterById(rowWidth)}`;
 
   window.gapi.client.load('sheets', 'v4', () => {
     window.gapi.client.sheets.spreadsheets.values
