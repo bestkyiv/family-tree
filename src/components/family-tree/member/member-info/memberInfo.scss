@@ -25,6 +25,11 @@
     padding: 20px;
     box-shadow: $shadow;
     user-select: auto;
+    box-sizing: border-box;
+
+    @include forMobile {
+      max-width: 90vw;
+    }
   }
 
   &__close-details-button {

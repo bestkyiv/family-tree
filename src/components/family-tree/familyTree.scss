@@ -1,6 +1,7 @@
 .members-container {
   margin: auto;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   padding: 100px 40px;
   box-sizing: border-box;
