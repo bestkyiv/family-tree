@@ -25,7 +25,7 @@
   }
 
   &__results {
-    max-height: 80vh;
     overflow-y: scroll;
+    max-height: calc(90vh - 110px);
   }
 }

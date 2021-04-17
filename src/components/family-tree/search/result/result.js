@@ -43,17 +43,12 @@ class Result extends Component {
   highlightQueryInName = name => {
     const {query} = this.props;
 
-    const regularParts = name.toLowerCase().split(query.toLowerCase());
-    return (
-      <>
-        {regularParts.map((part, partId) => (
-          <Fragment key={partId}>
-            {part}
-            {partId < regularParts.length - 1 && (<b>{query}</b>)}
-          </Fragment>
-        ))}
-      </>
-    );
+    const parts = name.split(new RegExp(`(${query})`, 'gi'));
+    return parts.map((part, partId) => (
+      <Fragment key={partId}>
+        {part.toLowerCase() === query.toLowerCase() ? <b>{part}</b> : part}
+      </Fragment>
+    ));
   }
 }
 
