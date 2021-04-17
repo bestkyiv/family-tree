@@ -31,6 +31,7 @@ class AccessLimiter extends Component {
       isLoading: false, // чи запит обробляється
       showChildren: false,
     };
+    this.inputRef = React.createRef();
   }
 
   componentDidMount() {
@@ -54,6 +55,16 @@ class AccessLimiter extends Component {
         });
     } else {
       this.loadRandomQuestions();
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {isLoading, isSubmitted} = this.props;
+    const {currentQuestion} = this.state;
+
+    // Залишати фокус на полі введення при зміні запитань
+    if (!isLoading && !isSubmitted && prevState.currentQuestion !== currentQuestion) {
+      this.inputRef.current.focus();
     }
   }
 
@@ -92,6 +103,7 @@ class AccessLimiter extends Component {
           )}
           <div className="access-limiter__answer-container">
             <input
+              ref={this.inputRef}
               type="text"
               className="access-limiter__answer-input"
               onChange={this.handleInputChange}
