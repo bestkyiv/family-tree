@@ -1,6 +1,12 @@
+const dashboardSheet = {
+  name: 'Dashboard',
+  startRow: 1,
+  columnsOrder: ['caption', 'value'],
+};
+
 const membersSheet = {
   name: 'Members',
-  startRow: 3,
+  startRow: 2,
   columnsOrder: [
     'active',
     'name',
@@ -14,7 +20,10 @@ const membersSheet = {
     'recDate',
     'parent',
     'family',
+    'history',
+    'botsAccess',
+    'board',
   ],
 }
 
-export {membersSheet};
+export {dashboardSheet, membersSheet};

@@ -7,8 +7,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  white-space: nowrap;
-  padding: 10px 10px 0 20px;
+  padding: 10px 0 0 20px;
   margin-left: 20px;
   border-left: 1px solid $light-grey-color;
   @include transition(padding, opacity, margin, border-width);
@@ -31,19 +30,21 @@
 
   &__item-caption {
     font-size: $font-size-xs;
-    margin-bottom: 4px;
     color: $grey-color;
+    white-space: nowrap;
+    margin-bottom: 2px;
     @include transition(font-size, margin);
 
     #{$this}_collapsed & {
-      margin-bottom: 0;
       font-size: 0;
+      margin: 0;
     }
   }
 
   &__item-value {
     font-size: $font-size-s;
     font-weight: bold;
+    line-height: 1.2;
     @include transition(font-size);
 
     #{$this}_collapsed & {

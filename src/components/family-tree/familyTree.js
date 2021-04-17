@@ -33,9 +33,8 @@ class FamilyTree extends Component {
   render() {
     const { membersList } = this.props;
 
-    return (
+    return !membersList.length ? <Loader /> : (
       <>
-        {!membersList.length && <Loader />}
         <Search
           membersList={membersList}
           highlightMember={this.highlightMember}
