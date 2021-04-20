@@ -18,6 +18,11 @@ const defaultProps = {
 };
 
 class Result extends Component {
+  constructor(props) {
+    super(props);
+    this.buttonRef = React.createRef();
+  }
+
   render() {
     const {
       name,
@@ -26,9 +31,11 @@ class Result extends Component {
     } = this.props;
 
     return (
-      <div
+      <button
+        ref={this.buttonRef}
         className="result"
         onClick={handleClick}
+        onKeyUp={this.handleKeyUp}
       >
         <span className="result__name">
           {this.highlightQueryInName(name)}
@@ -36,7 +43,7 @@ class Result extends Component {
         <span className="result__status">
           ({status})
         </span>
-      </div>
+      </button>
     );
   }
 
@@ -49,6 +56,19 @@ class Result extends Component {
         {part.toLowerCase() === query.toLowerCase() ? <b>{part}</b> : part}
       </Fragment>
     ));
+  }
+
+  handleKeyUp = event => {
+    if (event.key === 'ArrowUp') {
+      if (this.buttonRef.current.previousElementSibling) {
+        this.buttonRef.current.previousElementSibling.focus();
+      }
+    }
+    else if (event.key === 'ArrowDown') {
+      if (this.buttonRef.current.nextElementSibling) {
+        this.buttonRef.current.nextElementSibling.focus();
+      }
+    }
   }
 }
 

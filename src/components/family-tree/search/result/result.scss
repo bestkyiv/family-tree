@@ -2,13 +2,17 @@
 @import './src/config/style/mixins';
 
 .result {
+  display: block;
+  border: 0;
+  width: 100%;
   position: relative;
   cursor: pointer;
   padding: 5px 10px;
   background: #ffffff;
+  text-align: left;
   @include transition(background);
 
-  &:hover {
+  &:hover, &:focus {
     background-color: $light-grey-color;
   }
 
