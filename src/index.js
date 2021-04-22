@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
-import {dashboardSheet, membersSheet} from './config/sheets';
+import sheets from './config/sheets';
 
 import {initGoogleApi, loadDataFromSpreadsheet} from './utils/googleApi';
+import indexOfItemWhichContains from './utils/indexOfItemWhichContains';
 import parseMembersSheetRow from './utils/parseMembersSheetRow';
 
 import FamilyTree from './components/family-tree/familyTree';
@@ -29,40 +30,35 @@ class App extends Component {
         }
 
         try {
-          const projectsAndDepsData = await loadDataFromSpreadsheet({
-            spreadsheetId,
-            sheetName: dashboardSheet.name,
-            startRow: dashboardSheet.startRow,
-            rowWidth: dashboardSheet.columnsOrder.length,
-          })
+          const membersSpreadsheet = await loadDataFromSpreadsheet(spreadsheetId, sheets.members);
 
-          const amountOfProjects = +projectsAndDepsData[0][1];
-          const amountOfDepartments = +projectsAndDepsData[1][1];
+          const firstRow = membersSpreadsheet[0];
+          await membersSpreadsheet.shift();
 
-          const membersData = await loadDataFromSpreadsheet({
-            spreadsheetId,
-            sheetName: membersSheet.name,
-            startRow: membersSheet.startRow,
-            rowWidth: membersSheet.columnsOrder.length + amountOfProjects + amountOfDepartments,
-          })
-
-          const firstRow = membersData[0];
-          await membersData.shift();
+          const headings = membersSpreadsheet[0];
+          await membersSpreadsheet.shift();
 
           const projects = [];
-          const firstProjectColumn = membersSheet.columnsOrder.length;
-          for (let i = firstProjectColumn; i < firstProjectColumn + amountOfProjects; i++) {
-            projects.push(firstRow[i].split(' (')[0]);
+          const [projectsFirstColumn, projectsAmount] = this.getCoordsOfCell(firstRow, 'Проекти');
+
+          if (projectsAmount) {
+            for (let i = projectsFirstColumn; i < projectsFirstColumn + projectsAmount; i++) {
+              projects.push(headings[i].split(' (')[0]);
+            }
           }
 
           const departments = [];
-          const firstDepartmentColumn = membersSheet.columnsOrder.length + amountOfProjects;
-          for (let i = firstDepartmentColumn; i < firstDepartmentColumn + amountOfDepartments; i++) {
-            departments.push(firstRow[i].split(' (')[0]);
+          const [depsFirstColumn, depsAmount] = this.getCoordsOfCell(firstRow, 'Департаменти');
+
+          if (depsAmount) {
+            for (let i = depsFirstColumn; i < depsFirstColumn + depsAmount; i++) {
+              departments.push(headings[i].split(' (')[0]);
+            }
           }
 
           this.setState({
-            membersList: membersData.map((row, rowId) => parseMembersSheetRow(row, rowId, projects, departments))
+            membersList: membersSpreadsheet.map((row, rowId) =>
+              parseMembersSheetRow(row, rowId, headings, projects, departments))
           });
 
           resolve();
@@ -71,6 +67,20 @@ class App extends Component {
         }
       });
     });
+  }
+
+  getCoordsOfCell = (row, cellValue) => {
+    let span = 0;
+    const firstColumn = indexOfItemWhichContains(row, cellValue);
+    if (firstColumn) {
+      span++;
+      let currentColumn = firstColumn;
+      while (!row[currentColumn + 1]) {
+        span++;
+        currentColumn++;
+      }
+    }
+    return [firstColumn, span];
   }
 
   render() {
