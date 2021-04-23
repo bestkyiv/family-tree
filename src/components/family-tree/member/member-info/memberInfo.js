@@ -14,13 +14,12 @@ const propTypes = {
   name: PropTypes.string.isRequired,
   status: statusesType.isRequired,
   details: PropTypes.object,
-  active: PropTypes.bool,
+  activity: PropTypes.object,
   isCollapsed: PropTypes.bool,
   highlighted: PropTypes.bool,
 };
 
 const defaultProps = {
-  active: false,
   isCollapsed: false,
   highlighted: false,
 }
@@ -53,7 +52,7 @@ class MemberInfo extends Component {
       name,
       status,
       details,
-      active,
+      activity,
       isCollapsed,
       highlighted,
     } = this.props;
@@ -74,13 +73,15 @@ class MemberInfo extends Component {
         onClick={this.showDetails}
         onTransitionEnd={this.handleTransitionEnd}
         onMouseDown={e => e.stopPropagation()}
+        onKeyPress={e => e.key === 'Enter' && !areDetailsShown ? this.showDetails() : null}
+        tabIndex={0}
       >
         <GeneralInfo
           picture={picture}
           name={name}
           status={status}
           isCollapsed={isCollapsed}
-          withActivityIndicator={active}
+          activity={activity}
           highlighted={highlighted}
           handleClick={this.showDetails}
         />
@@ -88,16 +89,17 @@ class MemberInfo extends Component {
           {...details}
           isCollapsed={isCollapsed || !areDetailsShown}
         />
-        <div
+        <button
           className="member-info__close-details-button"
           onClick={this.hideDetails}
-        >x</div>
+        >x</button>
       </div>
     );
   }
 
   focusAfterTransition = () => {
     this.setState({transitionStarted: true});
+    this.memberInfoRef.current.focus();
   }
 
   handleTransitionEnd = () => {

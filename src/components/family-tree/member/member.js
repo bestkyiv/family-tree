@@ -2,20 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { statusesType } from 'config/statuses';
-
 import MemberInfo from './member-info/memberInfo';
 import ToggleButton from './toggle-button/toggleButton';
 
 import './member.scss';
 
 const propTypes = {
-  id: PropTypes.string.isRequired,
-  picture: PropTypes.string,
-  name: PropTypes.string.isRequired,
-  status: statusesType.isRequired,
-  active: PropTypes.bool,
-  details: PropTypes.object.isRequired,
+  info: PropTypes.object,
   hasParent: PropTypes.bool,
   highlighted: PropTypes.bool,
   isCollapsed: PropTypes.bool,
@@ -48,12 +41,7 @@ class Member extends Component {
 
   render() {
     const {
-      id,
-      picture,
-      name,
-      status,
-      active,
-      details,
+      info,
       children,
       hasParent,
       highlighted,
@@ -68,15 +56,11 @@ class Member extends Component {
 
     return (
       <div
-        id={id.toString()}
+        id={info.id.toString()}
         className={memberClasses}
       >
         <MemberInfo
-          picture={picture}
-          name={name}
-          status={status}
-          active={active}
-          details={details}
+          {...info}
           highlighted={highlighted}
           isCollapsed={isCollapsed}
         />

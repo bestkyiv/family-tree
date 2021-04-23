@@ -1,4 +1,4 @@
-import {membersSheet} from 'config/sheets';
+import indexOfItemWhichContains from './indexOfItemWhichContains';
 
 const parseDate = date => {
   if (!date) return null;
@@ -13,17 +13,17 @@ const formatPictureSrc = link => {
     : null;
 }
 
-const parseMembersSheetRow = (row, rowId, existingProjects, existingDepartments) => {
-  const projects = existingProjects.map((project, projectId) => {
-    const position = row[membersSheet.columnsOrder.length + projectId];
+const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDeps) => {
+  const projects = existingProjects.map(project => {
+    const position = row[indexOfItemWhichContains(headings, project)];
     if (position && !position.includes('Подача')) {
       return {name: project, position};
     }
     return null;
   }).filter(project => project != null);
 
-  const departments = existingDepartments.map((dep, depId) => {
-    const position = row[membersSheet.columnsOrder.length + existingProjects.length + depId];
+  const departments = existingDeps.map(dep => {
+    const position = row[indexOfItemWhichContains(headings, dep)];
     if (position) {
       return position !== 'Member' ? [dep, position] : dep;
     }
@@ -32,23 +32,26 @@ const parseMembersSheetRow = (row, rowId, existingProjects, existingDepartments)
 
   return {
     id: 'member' + (rowId + 1),
-    name: row[membersSheet.columnsOrder.indexOf('name')],
-    status: row[membersSheet.columnsOrder.indexOf('status')],
-    picture: formatPictureSrc(row[membersSheet.columnsOrder.indexOf('picture')]),
-    active: row[membersSheet.columnsOrder.indexOf('active')] === "TRUE",
-    parent: row[membersSheet.columnsOrder.indexOf('parent')],
+    name: row[indexOfItemWhichContains(headings, 'ПІБ')],
+    status: row[indexOfItemWhichContains(headings, 'Статус')],
+    picture: formatPictureSrc(row[indexOfItemWhichContains(headings, 'Фотографія')]),
+    parent: row[indexOfItemWhichContains(headings, 'Ментор')],
+    activity: {
+      locally: row[indexOfItemWhichContains(headings, 'Активний')] === "TRUE",
+      internationally: !!row[indexOfItemWhichContains(headings, 'Міжнар депи')],
+    },
     details: {
-      birthday: parseDate(row[membersSheet.columnsOrder.indexOf('birthday')]),
-      recDate: parseDate(row[membersSheet.columnsOrder.indexOf('recDate')]),
-      faculty: row[membersSheet.columnsOrder.indexOf('faculty')],
-      family: row[membersSheet.columnsOrder.indexOf('family')],
+      birthday: parseDate(row[indexOfItemWhichContains(headings, 'День народження')]),
+      recDate: parseDate(row[indexOfItemWhichContains(headings, 'Рекрутмент')]),
+      faculty: row[indexOfItemWhichContains(headings, 'Факультет')],
+      family: row[indexOfItemWhichContains(headings, 'Сім\'я')],
       contacts: {
-        email: row[membersSheet.columnsOrder.indexOf('email')],
-        telegram: row[membersSheet.columnsOrder.indexOf('telegram')],
-        phone: row[membersSheet.columnsOrder.indexOf('phone')],
+        email: row[indexOfItemWhichContains(headings, 'Email')],
+        telegram: row[indexOfItemWhichContains(headings, 'Telegram')],
+        phone: row[indexOfItemWhichContains(headings, 'Телефон')],
       },
       membership: {
-        board: row[membersSheet.columnsOrder.indexOf('board')],
+        board: row[indexOfItemWhichContains(headings, 'Board')],
         projects,
         departments,
       }

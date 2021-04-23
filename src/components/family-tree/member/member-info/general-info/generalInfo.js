@@ -13,17 +13,14 @@ const propTypes = {
   name: PropTypes.string.isRequired,
   status: statusesType.isRequired,
   isCollapsed: PropTypes.bool,
-  withActivityIndicator: PropTypes.bool,
+  activity: PropTypes.object,
   highlighted: PropTypes.bool,
-  handleClick: PropTypes.func,
+  handleClick: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
   isCollapsed: false,
-  picture: null,
-  withActivityIndicator: false,
   highlighted: false,
-  handleClick: null,
 }
 
 class GeneralInfo extends Component {
@@ -32,14 +29,13 @@ class GeneralInfo extends Component {
       picture,
       name,
       status,
-      withActivityIndicator,
+      activity,
       isCollapsed,
       highlighted,
       handleClick,
     } = this.props;
 
     const generalInfoClasses = classnames('general-info', {
-      'general-info_with-activity-indicator': withActivityIndicator,
       'general-info_collapsed': isCollapsed,
       'general-info_highlighted': highlighted,
     });
@@ -53,6 +49,8 @@ class GeneralInfo extends Component {
           src={picture}
           isCollapsed={isCollapsed}
         />
+        {activity.locally && <div className="general-info__local-indicator" title="Мембер активний локально" />}
+        {activity.internationally && <div className="general-info__international-indicator" title="Мембер активний на міжнарі" />}
         <div className="general-info__name">{name}</div>
         <div className="general-info__status">{status}</div>
       </div>

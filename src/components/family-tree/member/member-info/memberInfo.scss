@@ -8,16 +8,16 @@
   display: flex;
   cursor: pointer;
   border-radius: 10px;
-  background: #fff;
   margin: 0 20px;
   padding: 0;
   box-shadow: 0 0 0 #fff;
   user-select: none;
-  @include transition(margin, padding, box-shadow);
+  @include transition(margin, padding, box-shadow, visibility);
 
   &_collapsed {
     margin: 0;
     padding: 0;
+    visibility: hidden;
   }
 
   &_details-shown {
@@ -26,6 +26,7 @@
     box-shadow: $shadow;
     user-select: auto;
     box-sizing: border-box;
+    background: #ffffff;
 
     @include forMobile {
       max-width: 90vw;
@@ -43,17 +44,21 @@
     color: #ffffff;
     border-radius: 50%;
     text-align: center;
+    visibility: hidden;
     font-size: 0;
     width: 0;
     height: 0;
     opacity: 0;
-    @include transition(width, height, opacity, font-size, line-height);
+    border: 0;
+    padding: 0;
+    @include transition(width, height, opacity, font-size, line-height, visibility);
 
     #{$this}_details-shown & {
       width: 15px;
       height: 15px;
       opacity: 1;
       font-size: $font-size-xs;
+      visibility: visible;
     }
   }
 }

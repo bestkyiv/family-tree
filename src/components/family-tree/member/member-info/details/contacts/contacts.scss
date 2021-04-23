@@ -14,10 +14,11 @@
   &__link {
     display: inline-block;
     margin-right: 5px;
-    @include transition(margin);
+    @include transition(margin, visibility);
 
     #{$this}_collapsed & {
       margin: 0;
+      visibility: hidden;
     }
   }
 

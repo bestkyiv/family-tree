@@ -36,7 +36,7 @@ class ToggleButton extends Component {
     });
 
     return (
-      <div
+      <button
         ref={this.toggleButtonRef}
         className={toggleButtonClasses}
         onClick={this.handleClick}
@@ -44,7 +44,7 @@ class ToggleButton extends Component {
         onTransitionEnd={this.handleTransitionEnd}
       >
         {isOn ? '-' : '+'}
-      </div>
+      </button>
     );
   }
 
