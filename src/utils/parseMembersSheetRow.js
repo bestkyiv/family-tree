@@ -32,11 +32,14 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
 
   return {
     id: 'member' + (rowId + 1),
-    active: row[indexOfItemWhichContains(headings, 'Активний')] === "TRUE",
     name: row[indexOfItemWhichContains(headings, 'ПІБ')],
     status: row[indexOfItemWhichContains(headings, 'Статус')],
     picture: formatPictureSrc(row[indexOfItemWhichContains(headings, 'Фотографія')]),
     parent: row[indexOfItemWhichContains(headings, 'Ментор')],
+    activity: {
+      locally: row[indexOfItemWhichContains(headings, 'Активний')] === "TRUE",
+      internationally: !!row[indexOfItemWhichContains(headings, 'Міжнар депи')],
+    },
     details: {
       birthday: parseDate(row[indexOfItemWhichContains(headings, 'День народження')]),
       recDate: parseDate(row[indexOfItemWhichContains(headings, 'Рекрутмент')]),

@@ -14,13 +14,12 @@ const propTypes = {
   name: PropTypes.string.isRequired,
   status: statusesType.isRequired,
   details: PropTypes.object,
-  active: PropTypes.bool,
+  activity: PropTypes.object,
   isCollapsed: PropTypes.bool,
   highlighted: PropTypes.bool,
 };
 
 const defaultProps = {
-  active: false,
   isCollapsed: false,
   highlighted: false,
 }
@@ -53,7 +52,7 @@ class MemberInfo extends Component {
       name,
       status,
       details,
-      active,
+      activity,
       isCollapsed,
       highlighted,
     } = this.props;
@@ -80,7 +79,7 @@ class MemberInfo extends Component {
           name={name}
           status={status}
           isCollapsed={isCollapsed}
-          withActivityIndicator={active}
+          activity={activity}
           highlighted={highlighted}
           handleClick={this.showDetails}
         />

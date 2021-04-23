@@ -52,22 +52,22 @@ class FamilyTree extends Component {
     const { membersList } = this.props;
 
     const membersTree = formatGSSDataToTree(membersList);
-    return membersTree.map(member => this.buildTreeBranch(member));
+    return membersTree.map(memberInfo => this.buildTreeBranch(memberInfo));
   }
 
-  buildTreeBranch(member, hasParent = false) {
+  buildTreeBranch(memberInfo, hasParent = false) {
     const {highlightedMemberId, highlightedMemberAncestors} = this.state;
 
     return <Member
-      key={member.id}
-      {...member}
+      key={memberInfo.id}
+      info={memberInfo}
       hasParent={hasParent}
-      highlighted={highlightedMemberId === member.id}
-      showChildren={highlightedMemberAncestors.includes(member.id)}
+      highlighted={highlightedMemberId === memberInfo.id}
+      showChildren={highlightedMemberAncestors.includes(memberInfo.id)}
     >
       {
-        member.hasOwnProperty('children') && member.children.length > 0 &&
-          member.children.map(child => this.buildTreeBranch(child, true))
+        memberInfo.hasOwnProperty('children') && memberInfo.children.length > 0 &&
+        memberInfo.children.map(childInfo => this.buildTreeBranch(childInfo, true))
       }
     </Member>
   }
