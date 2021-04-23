@@ -19,10 +19,8 @@ body {
   height: 100%;
 }
 
-input, button {
-  &:focus {
-    outline: none;
-  }
+*:focus {
+  outline: none;
 }
 
 a {

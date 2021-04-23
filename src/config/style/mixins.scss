@@ -9,20 +9,6 @@
   transition: $unfoldedTransitions;
 }
 
-@mixin hide() {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity $animation-duration $animation-timing-function,
-    visibility $animation-duration $animation-timing-function $animation-duration;
-}
-
-@mixin show() {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity $animation-duration $animation-timing-function,
-    visibility $animation-duration $animation-timing-function $animation-duration;
-}
-
 @mixin forMobile() {
   @media (max-width: $mobile-breakpoint) {
     @content;

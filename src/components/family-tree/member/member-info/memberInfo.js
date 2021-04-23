@@ -73,6 +73,8 @@ class MemberInfo extends Component {
         onClick={this.showDetails}
         onTransitionEnd={this.handleTransitionEnd}
         onMouseDown={e => e.stopPropagation()}
+        onKeyPress={e => e.key === 'Enter' && !areDetailsShown ? this.showDetails() : null}
+        tabIndex={0}
       >
         <GeneralInfo
           picture={picture}
@@ -87,16 +89,17 @@ class MemberInfo extends Component {
           {...details}
           isCollapsed={isCollapsed || !areDetailsShown}
         />
-        <div
+        <button
           className="member-info__close-details-button"
           onClick={this.hideDetails}
-        >x</div>
+        >x</button>
       </div>
     );
   }
 
   focusAfterTransition = () => {
     this.setState({transitionStarted: true});
+    this.memberInfoRef.current.focus();
   }
 
   handleTransitionEnd = () => {

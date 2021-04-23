@@ -16,7 +16,9 @@
   color: #ffffff;
   text-align: center;
   margin-top: 10px;
-  @include transition(opacity, height, width, margin, font-size);
+  border: 0;
+  padding: 0;
+  @include transition(opacity, height, width, margin, font-size, visibility);
 
   &_collapsed {
     margin: 0;
@@ -24,6 +26,7 @@
     height: 0;
     width: 0;
     font-size: 0;
+    visibility: hidden;
   }
 
   &::after {
