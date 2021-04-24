@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import sheets from './config/sheets';
 
 import {initGoogleApi, loadDataFromSpreadsheet} from './utils/googleApi';
-import indexOfItemWhichContains from './utils/indexOfItemWhichContains';
+import indexOfItemWhichStartsWith from './utils/indexOfItemWhichStartsWith';
 import parseMembersSheetRow from './utils/parseMembersSheetRow';
 
 import FamilyTree from './components/family-tree/familyTree';
@@ -71,7 +71,7 @@ class App extends Component {
 
   getCoordsOfCell = (row, cellValue) => {
     let span = 0;
-    const firstColumn = indexOfItemWhichContains(row, cellValue);
+    const firstColumn = indexOfItemWhichStartsWith(row, cellValue);
     if (firstColumn) {
       span++;
       let currentColumn = firstColumn;
