@@ -1,4 +1,4 @@
-import indexOfItemWhichContains from './indexOfItemWhichContains';
+import indexOfItemWhichStartsWith from './indexOfItemWhichStartsWith';
 
 const parseDate = date => {
   if (!date) return null;
@@ -15,7 +15,7 @@ const formatPictureSrc = link => {
 
 const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDeps) => {
   const projects = existingProjects.map(project => {
-    const position = row[indexOfItemWhichContains(headings, project)];
+    const position = row[indexOfItemWhichStartsWith(headings, project)];
     if (position && !position.includes('Подача')) {
       return {name: project, position};
     }
@@ -23,7 +23,7 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
   }).filter(project => project != null);
 
   const departments = existingDeps.map(dep => {
-    const position = row[indexOfItemWhichContains(headings, dep)];
+    const position = row[indexOfItemWhichStartsWith(headings, dep)];
     if (position) {
       return position !== 'Member' ? [dep, position] : dep;
     }
@@ -32,26 +32,26 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
 
   return {
     id: 'member' + (rowId + 1),
-    name: row[indexOfItemWhichContains(headings, 'ПІБ')],
-    status: row[indexOfItemWhichContains(headings, 'Статус')],
-    picture: formatPictureSrc(row[indexOfItemWhichContains(headings, 'Фотографія')]),
-    parent: row[indexOfItemWhichContains(headings, 'Ментор')],
+    name: row[indexOfItemWhichStartsWith(headings, 'ПІБ')],
+    status: row[indexOfItemWhichStartsWith(headings, 'Статус')],
+    picture: formatPictureSrc(row[indexOfItemWhichStartsWith(headings, 'Фотографія')]),
+    parent: row[indexOfItemWhichStartsWith(headings, 'Ментор')],
     activity: {
-      locally: row[indexOfItemWhichContains(headings, 'Активний')] === "TRUE",
-      internationally: !!row[indexOfItemWhichContains(headings, 'Міжнар депи')],
+      locally: row[indexOfItemWhichStartsWith(headings, 'Активний')] === "TRUE",
+      internationally: !!row[indexOfItemWhichStartsWith(headings, 'Міжнар депи')],
     },
     details: {
-      birthday: parseDate(row[indexOfItemWhichContains(headings, 'День народження')]),
-      recDate: parseDate(row[indexOfItemWhichContains(headings, 'Рекрутмент')]),
-      faculty: row[indexOfItemWhichContains(headings, 'Факультет')],
-      family: row[indexOfItemWhichContains(headings, 'Сім\'я')],
+      birthday: parseDate(row[indexOfItemWhichStartsWith(headings, 'День народження')]),
+      recDate: parseDate(row[indexOfItemWhichStartsWith(headings, 'Рекрутмент')]),
+      faculty: row[indexOfItemWhichStartsWith(headings, 'Факультет')],
+      family: row[indexOfItemWhichStartsWith(headings, 'Сім\'я')],
       contacts: {
-        email: row[indexOfItemWhichContains(headings, 'Email')],
-        telegram: row[indexOfItemWhichContains(headings, 'Telegram')],
-        phone: row[indexOfItemWhichContains(headings, 'Телефон')],
+        email: row[indexOfItemWhichStartsWith(headings, 'Email')],
+        telegram: row[indexOfItemWhichStartsWith(headings, 'Telegram')],
+        phone: row[indexOfItemWhichStartsWith(headings, 'Телефон')],
       },
       membership: {
-        board: row[indexOfItemWhichContains(headings, 'Board')],
+        board: row[indexOfItemWhichStartsWith(headings, 'Board')],
         projects,
         departments,
       }
