@@ -4,7 +4,4 @@
 # production
 /build
 
-# misc
-.env
-
 /.idea
