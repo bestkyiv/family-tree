@@ -29,15 +29,24 @@ class MemberInfo extends Component {
     super(props);
     this.state = {
       areDetailsShown: false,
+      isHistoryShown: false,
       transitionStarted: false,
     }
     this.memberInfoRef = React.createRef();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     // Приховати деталі якщо мембер приховується
     if (!prevProps.isCollapsed && this.props.isCollapsed) {
-      this.setState({areDetailsShown: false});
+      this.setState({
+        areDetailsShown: false,
+        isHistoryShown: false,
+      });
+    }
+
+    // Приховати історію якщо ховаються деталі
+    if (prevState.areDetailsShown && !this.state.areDetailsShown) {
+      this.setState({isHistoryShown: false});
     }
 
     // Навести фокус на мембера, якщо він став виділеним
@@ -53,11 +62,13 @@ class MemberInfo extends Component {
       status,
       details,
       activity,
+      history,
       isCollapsed,
       highlighted,
     } = this.props;
     const {
       areDetailsShown,
+      isHistoryShown,
     } = this.state;
 
     const memberInfoClasses = classnames('member-info', {
@@ -76,19 +87,38 @@ class MemberInfo extends Component {
         onKeyPress={e => e.key === 'Enter' && !areDetailsShown ? this.showDetails() : null}
         tabIndex={0}
       >
-        <GeneralInfo
-          picture={picture}
-          name={name}
-          status={status}
-          isCollapsed={isCollapsed}
-          activity={activity}
-          highlighted={highlighted}
-          handleClick={this.showDetails}
-        />
-        <Details
-          {...details}
-          isCollapsed={isCollapsed || !areDetailsShown}
-        />
+        <div className="member-info__content">
+          <GeneralInfo
+            picture={picture}
+            name={name}
+            status={status}
+            isCollapsed={isCollapsed}
+            activity={activity}
+            highlighted={highlighted}
+            handleClick={this.showDetails}
+          />
+          <Details
+            {...details}
+            isCollapsed={isCollapsed || !areDetailsShown}
+          />
+        </div>
+        {history.length > 0 && (
+          <div className="member-info__history">
+            <button
+                className={classnames('member-info__history-toggle', {
+                  'member-info__history-toggle_collapsed': isCollapsed || !areDetailsShown,
+                })}
+                onClick={() => this.setState(prevState => ({isHistoryShown: !prevState.isHistoryShown}))}
+            >
+              {isHistoryShown ? 'Приховати історію' : 'Показати історію'}
+            </button>
+            <ul className={classnames('member-info__history-content', {
+              'member-info__history-content_shown': isHistoryShown,
+            })}>
+              {history.map((item, itemId) => <li key={itemId}>{item}</li>)}
+            </ul>
+          </div>
+        )}
         <button
           className="member-info__close-details-button"
           onClick={this.hideDetails}

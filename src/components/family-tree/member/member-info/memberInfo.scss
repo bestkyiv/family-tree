@@ -5,7 +5,6 @@
   $this: &;
 
   position: relative;
-  display: flex;
   cursor: pointer;
   border-radius: 10px;
   margin: 0 20px;
@@ -31,6 +30,10 @@
     @include forMobile {
       max-width: 90vw;
     }
+  }
+
+  &__content {
+    display: flex;
   }
 
   &__close-details-button {
@@ -59,6 +62,51 @@
       opacity: 1;
       font-size: $font-size-xs;
       visibility: visible;
+    }
+  }
+
+  &__history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__history-content {
+    font-family: $font-family;
+    margin: 0;
+    font-size: 0;
+    opacity: 0;
+    visibility: hidden;
+    list-style-type: none;
+    padding: 0;
+    @include transition(margin, opacity, font-size, visibility);
+
+    &_shown {
+      margin: 20px 0 0;
+      font-size: $font-size-s;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &__history-toggle {
+    padding: 0;
+    margin: 10px 0 -15px;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    font-size: $font-size-xs;
+    color: $lighter-grey-color;
+    height: 30px;
+    @include transition(margin, height, font-size, opacity, visibility);
+
+    &_collapsed {
+      margin: 0;
+      height: 0;
+      font-size: 0;
+      opacity: 0;
+      visibility: hidden;
     }
   }
 }

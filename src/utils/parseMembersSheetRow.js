@@ -54,8 +54,9 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
         board: row[indexOfItemWhichStartsWith(headings, 'Board')],
         projects,
         departments,
-      }
-    }
+      },
+    },
+    history: row[indexOfItemWhichStartsWith(headings, 'Історія')].split('\n').filter(item => !!item),
   };
 };
 
