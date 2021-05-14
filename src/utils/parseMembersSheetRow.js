@@ -30,6 +30,20 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
     return null;
   }).filter(dep => dep != null);
 
+  const internationalDeps = row[indexOfItemWhichStartsWith(headings, 'Міжнар депи і проекти')]
+      .split('\n').filter(item => !!item)
+      .map(dep => {
+        const addition = /\(.+\)/g.exec(dep);
+        return addition ? [dep.split(' (')[0], addition[0].slice(1,-1)] : dep;
+      });
+
+  const internationalEvents = row[indexOfItemWhichStartsWith(headings, 'Міжнар івенти')]
+      .split('\n').filter(item => !!item)
+      .map(event => {
+        const addition = /\(.+\)/g.exec(event);
+        return addition ? [event.split(' (')[0], addition[0].slice(1,-1)] : event;
+      });
+
   return {
     id: 'member' + (rowId + 1),
     name: row[indexOfItemWhichStartsWith(headings, 'ПІБ')],
@@ -38,7 +52,7 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
     parent: row[indexOfItemWhichStartsWith(headings, 'Ментор')],
     activity: {
       locally: row[indexOfItemWhichStartsWith(headings, 'Активний')] === "TRUE",
-      internationally: !!row[indexOfItemWhichStartsWith(headings, 'Міжнар депи')],
+      internationally: internationalDeps.length > 0
     },
     details: {
       birthday: parseDate(row[indexOfItemWhichStartsWith(headings, 'День народження')]),
@@ -54,6 +68,8 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
         board: row[indexOfItemWhichStartsWith(headings, 'Board')],
         projects,
         departments,
+        internationalDeps,
+        internationalEvents,
       },
     },
     history: row[indexOfItemWhichStartsWith(headings, 'Історія')].split('\n').filter(item => !!item),

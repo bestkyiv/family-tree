@@ -45,18 +45,21 @@ class Details extends Component {
           >
             <div className="details__item-caption">{item.capture}</div>
             <div className="details__item-value">
-              {Array.isArray(item.value)
-                ? item.value.map(part => {
-                    const value = Array.isArray(part) ? part[0] : part;
-                    const addition = Array.isArray(part) ? part[1] : null;
-                    return (
-                      <span key={value}>
-                        {value}
-                        {addition && <span className="details__item-addition"> ({addition})</span>}
-                      </span>
-                    );
-                  }).reduce((acc, x) => acc === null ? x : [acc, ', ', x], null)
-                : (<>{item.value} {item.addition && <span className="details__item-addition"> ({item.addition})</span>}</>)
+              {
+                item.value.map((part, partId) => {
+                  const value = Array.isArray(part) ? part[0] : part;
+                  const addition = Array.isArray(part) ? part[1] : null;
+                  return (
+                    <span
+                        key={partId}
+                        className="details__item-value-part"
+                    >
+                      {value}
+                      {addition && <span className="details__item-value-addition"> ({addition})</span>}
+                      {partId !== item.value.length - 1 && ','}
+                    </span>
+                  );
+                })
               }
             </div>
           </div>
@@ -81,7 +84,7 @@ class Details extends Component {
       detailsItems.push({
         key: 'board',
         capture: 'Board',
-        value: membership.board,
+        value: [membership.board],
       });
     }
 
@@ -90,7 +93,7 @@ class Details extends Component {
         detailsItems.push({
           key: `project${projectId}`,
           capture: project.name,
-          value: project.position,
+          value: [project.position],
         });
       });
     }
@@ -103,12 +106,27 @@ class Details extends Component {
       });
     }
 
+    if (membership.internationalDeps.length > 0) {
+      detailsItems.push({
+        key: 'internationalDeps',
+        capture: 'Міжнар відділи та проекти',
+        value: membership.internationalDeps,
+      });
+    }
+
+    if (membership.internationalEvents.length > 0) {
+      detailsItems.push({
+        key: 'internationalDeps',
+        capture: 'Міжнар івенти',
+        value: membership.internationalEvents,
+      });
+    }
+
     if (birthday) {
       detailsItems.push({
         key: 'birthday',
         capture: 'День народження',
-        value: formatDate(birthday),
-        addition: howLongSince(birthday).years,
+        value: [[formatDate(birthday), howLongSince(birthday).years]],
       });
     }
 
@@ -116,8 +134,7 @@ class Details extends Component {
       detailsItems.push({
         key: 'recDate',
         capture: 'Рекрутмент',
-        value: formatDate(recDate),
-        addition: this.getTimeInBEST() + ' тому',
+        value: [[formatDate(recDate), this.getTimeInBEST() + ' тому']],
       });
     }
 
@@ -125,7 +142,7 @@ class Details extends Component {
       detailsItems.push({
         key: 'faculty',
         capture: 'Факультет',
-        value: faculty,
+        value: [faculty],
       });
     }
 
@@ -133,7 +150,7 @@ class Details extends Component {
       detailsItems.push({
         key: 'family',
         capture: 'Сім\'я',
-        value: family,
+        value: [family],
       });
     }
 

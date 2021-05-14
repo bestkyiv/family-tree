@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: 250px;
   padding: 10px 0 0 20px;
   margin-left: 20px;
   border-left: 1px solid $light-grey-color;
@@ -45,6 +46,9 @@
     font-size: $font-size-s;
     font-weight: bold;
     line-height: 1.2;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     @include transition(font-size);
 
     #{$this}_collapsed & {
@@ -52,7 +56,16 @@
     }
   }
 
-  &__item-addition {
+  &__item-value-part {
+    margin-right: 3px;
+    @include transition(margin);
+
+    #{$this}_collapsed & {
+      margin: 0;
+    }
+  }
+
+  &__item-value-addition {
     color: $grey-color;
     font-size: $font-size-xs;
     font-weight: normal;
