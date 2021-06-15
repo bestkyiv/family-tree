@@ -11,6 +11,7 @@ import parseMembersSheetRow from 'utils/parseMembersSheetRow';
 import AccessLimiter from 'components/access-limiter/accessLimiter';
 import Search from 'components/search/search';
 import FamilyTree from 'components/family-tree/familyTree';
+import NotificationsContainer from 'components/notifications-container/notificationsContainer';
 
 import 'app.scss';
 
@@ -83,6 +84,7 @@ const App = () => {
   return (
     <AccessLimiter onAccessGranted={loadMembersData}>
       <Search />
+      <NotificationsContainer />
       <FamilyTree />
     </AccessLimiter>
   );
