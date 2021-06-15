@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
-import cookie from 'react-cookies'
-import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react';
+import cookie from 'react-cookies';
 
 import accessQuestions from 'config/accessQuestions';
 import {checkIfBestieEndpoint, adminTelegramUrl} from 'config/links';
 
-import getRandomItemsFromArray from 'utils/getRandomItemsFromArray';
+import {getRandomItemsFromArray} from 'utils/arrayUtils';
 
 import Loader from 'components/loader/loader';
 
@@ -14,39 +13,31 @@ import './accessLimiter.scss';
 const QUESTIONS_AMOUNT = 3;
 const COOKIES_DURATION_IN_DAYS = 180;
 
-const propTypes = {
-  onAccessGranted: PropTypes.func.isRequired,
-};
+const AccessLimiter = ({children, onAccessGranted}) => {
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentAnswer, setCurrentAnswer] = useState('');
+  const [urlParams, setUrlParams] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false); // чи був надісланий запит на бекенд
+  const [isAccessGranted, setIsAccessGranted] = useState(false); // чи бекенд надав доступ
+  const [isLoading, setIsLoading] = useState(false); // чи запит обробляється
+  const [showChildren, setShowChildren] = useState(false);
 
-class AccessLimiter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      questions: [],
-      currentQuestion: 0,
-      currentAnswer: '',
-      urlParams: '',
-      isSubmitted: false, // чи був надісланий запит на бекенд
-      isAccessGranted: false, // чи бекенд надав доступ
-      isLoading: false, // чи запит обробляється
-      showChildren: false,
-    };
-    this.inputRef = React.createRef();
-  }
+  const inputRef = React.createRef();
 
-  componentDidMount() {
-    const {onAccessGranted} = this.props;
+  const loadRandomQuestions = () => setQuestions(getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT));
 
+  useEffect(() => {
     const gapiKey = cookie.load('gapiKey');
     const spreadsheetId = cookie.load('spreadsheetId');
 
     if (spreadsheetId && gapiKey) {
-      this.setState({showChildren: true});
+      setShowChildren(true);
 
       onAccessGranted(gapiKey, spreadsheetId)
         .catch(errorMessage => {
-          this.setState({showChildren: false});
-          this.loadRandomQuestions();
+          setShowChildren(false);
+          loadRandomQuestions();
 
           cookie.remove('gapiKey');
           cookie.remove('spreadsheetId');
@@ -54,43 +45,48 @@ class AccessLimiter extends Component {
           throw new Error(errorMessage);
         });
     } else {
-      this.loadRandomQuestions();
+      loadRandomQuestions();
     }
-  }
+  }, [onAccessGranted]);
 
-  componentDidUpdate(prevProps, prevState) {
-    const {isLoading, isSubmitted} = this.props;
-    const {currentQuestion} = this.state;
-
+  useEffect(() => {
     // Залишати фокус на полі введення при зміні запитань
-    if (!isLoading && !isSubmitted && prevState.currentQuestion !== currentQuestion) {
-      this.inputRef.current.focus();
+    if (!isLoading && !isSubmitted && currentQuestion > 0)
+      inputRef.current.focus();
+  }, [currentQuestion, isLoading, isSubmitted, inputRef]);
+
+  const submit = async () => {
+    setIsSubmitted(true);
+    setIsLoading(true);
+
+    const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
+    const responseJson = await response.json();
+
+    setIsLoading(false);
+
+    if (responseJson.hasOwnProperty('apiKey') && responseJson.hasOwnProperty('spreadsheetId')) {
+      onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
+      setIsAccessGranted(true);
+
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
+
+      cookie.save('spreadsheetId', responseJson.spreadsheetId, {expires: expirationDate});
+      cookie.save('gapiKey', responseJson.apiKey, {expires: expirationDate});
     }
-  }
+  };
 
-  render() {
-    const {children} = this.props;
-    const {showChildren} = this.state;
+  const showNextQuestion = () => {
+    setCurrentQuestion(currentQuestion + 1);
+    setCurrentAnswer('');
+  };
 
-    return showChildren ? children : (
-      <div className="access-limiter">
-        <div className="access-limiter__container">
-          {this.getContentVariant()}
-        </div>
-      </div>
-    );
-  }
+  const handleButtonClick = () => {
+    setUrlParams(`${urlParams}${currentQuestion ? '&' : ''}${questions[currentQuestion].id}=${encodeURIComponent(currentAnswer)}`);
+    currentQuestion === questions.length - 1 ? submit() : showNextQuestion()
+  };
 
-  getContentVariant() {
-    const {
-      questions,
-      currentQuestion,
-      currentAnswer,
-      isSubmitted,
-      isAccessGranted,
-      isLoading,
-    } = this.state;
-
+  const getContentVariant = () => {
     if (isLoading) {
       return <Loader size="s"/>;
     }
@@ -103,11 +99,11 @@ class AccessLimiter extends Component {
           )}
           <div className="access-limiter__answer-container">
             <input
-              ref={this.inputRef}
+              ref={inputRef}
               type="text"
               className="access-limiter__answer-input"
-              onChange={this.handleInputChange}
-              onKeyPress={e => e.key === 'Enter' && currentAnswer ? this.handleButtonClick() : null}
+              onChange={({target}) => setCurrentAnswer(target.value)}
+              onKeyPress={e => e.key === 'Enter' && currentAnswer ? handleButtonClick() : null}
               value={currentAnswer}
               autoFocus
             />
@@ -115,7 +111,7 @@ class AccessLimiter extends Component {
               type="button"
               className="access-limiter__button"
               disabled={!currentAnswer}
-              onClick={this.handleButtonClick}
+              onClick={handleButtonClick}
             >
               {currentQuestion === questions.length - 1 ? 'Завершити' : 'Далі'}
             </button>
@@ -134,12 +130,14 @@ class AccessLimiter extends Component {
           <div className="access-limiter__title">Вітаю, бестік!</div>
           <div className="access-limiter__description">
             Тут ти зможеш знайти інформацію про себе, усіх своїх предків, нащадків, братів та сестер.
-            Якщо ти раптом знайшов неточності або відсутність якоїсь інформації, то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> або будь-кому з HR відділу.
+            Якщо ти раптом знайшов неточності або відсутність якоїсь інформації, то напиши
+            <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
+            або будь-кому з HR відділу.
           </div>
           <button
             type="button"
             className="access-limiter__continue-button"
-            onClick={() => this.setState({showChildren: true})}
+            onClick={() => setShowChildren(true)}
             autoFocus
           >
             Подивитись дерево
@@ -153,84 +151,38 @@ class AccessLimiter extends Component {
         <div className="access-limiter__title">Упс!</div>
         <div className="access-limiter__description">
           Здається ти не бестік, тому я не можу дати тобі сюди доступ.
-          Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a> за допомогою.
+          Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши
+          <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
+          за допомогою.
         </div>
         <button
           type="button"
           className="access-limiter__continue-button"
-          onClick={() => this.setState({
-            isSubmitted: false,
-            urlParams: '',
-            currentAnswer: '',
-            currentQuestion: 0,
-          })}
+          onClick={() => {
+            setIsSubmitted(false);
+            setUrlParams('');
+            setCurrentAnswer('');
+            setCurrentQuestion(0);
+          }}
           autoFocus
         >
           Спробувати ще раз
         </button>
       </>
     );
-  }
+  };
 
-  loadRandomQuestions = () => this.setState({questions: getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT)});
+  if (showChildren) return children;
 
-  handleInputChange = ({target}) => {
-    this.setState({currentAnswer: target.value});
-  }
+  if (questions.length === 0) return null;
 
-  handleButtonClick = () => {
-    const {
-      questions,
-      currentQuestion,
-      currentAnswer,
-    } = this.state;
-
-    this.setState(
-      prevState => ({
-        urlParams: `${prevState.urlParams}${currentQuestion ? '&' : ''}${questions[currentQuestion].id}=${encodeURIComponent(currentAnswer)}`
-      }),
-      currentQuestion === questions.length - 1
-        ? this.submit
-        : this.showNextQuestion
-    );
-  }
-
-  showNextQuestion = () => {
-    this.setState(prevState => {
-      return {
-        currentQuestion: prevState.currentQuestion + 1,
-        currentAnswer: '',
-      }
-    });
-  }
-
-  submit = async () => {
-    const {onAccessGranted} = this.props;
-    const {urlParams} = this.state
-
-    this.setState({
-      isSubmitted: true,
-      isLoading: true,
-    });
-
-    const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
-    const responseJson = await response.json();
-
-    this.setState({isLoading: false});
-
-    if (responseJson.hasOwnProperty('apiKey') && responseJson.hasOwnProperty('spreadsheetId')) {
-      onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
-      this.setState({isAccessGranted: true});
-
-      const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
-
-      cookie.save('spreadsheetId', responseJson.spreadsheetId, {expires: expirationDate});
-      cookie.save('gapiKey', responseJson.apiKey, {expires: expirationDate});
-    }
-  }
-}
-
-AccessLimiter.propTypes = propTypes;
+  return (
+    <div className="access-limiter">
+      <div className="access-limiter__container">
+        {getContentVariant()}
+      </div>
+    </div>
+  );
+};
 
 export default AccessLimiter;

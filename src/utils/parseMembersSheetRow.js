@@ -1,10 +1,6 @@
-import indexOfItemWhichStartsWith from './indexOfItemWhichStartsWith';
-
-const parseDate = date => {
-  if (!date) return null;
-  const splitDate = date.split('.');
-  return new Date(+splitDate[2], +splitDate[1] - 1, +splitDate[0]);
-}
+import {findStringInArray} from './arrayUtils';
+import moment from 'moment';
+import 'moment/locale/uk';
 
 const formatPictureSrc = link => {
   const imageGoogleDriveId = /[-\w]{25,}/.exec(link);
@@ -15,7 +11,7 @@ const formatPictureSrc = link => {
 
 const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDeps) => {
   const projects = existingProjects.map(project => {
-    const position = row[indexOfItemWhichStartsWith(headings, project)];
+    const position = row[findStringInArray(headings, project)];
     if (position && !position.includes('Подача')) {
       return {name: project, position};
     }
@@ -23,21 +19,21 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
   }).filter(project => project != null);
 
   const departments = existingDeps.map(dep => {
-    const position = row[indexOfItemWhichStartsWith(headings, dep)];
+    const position = row[findStringInArray(headings, dep)];
     if (position) {
       return position !== 'Member' ? [dep, position] : dep;
     }
     return null;
   }).filter(dep => dep != null);
 
-  const internationalDeps = row[indexOfItemWhichStartsWith(headings, 'Міжнар депи і проекти')]
+  const internationalDeps = row[findStringInArray(headings, 'Міжнар депи і проекти')]
       .split('\n').filter(item => !!item)
       .map(dep => {
         const addition = /\(.+\)/g.exec(dep);
         return addition ? [dep.split(' (')[0], addition[0].slice(1,-1)] : dep;
       });
 
-  const internationalEvents = row[indexOfItemWhichStartsWith(headings, 'Міжнар івенти')]
+  const internationalEvents = row[findStringInArray(headings, 'Міжнар івенти')]
       .split('\n').filter(item => !!item)
       .map(event => {
         const addition = /\(.+\)/g.exec(event);
@@ -46,33 +42,33 @@ const parseMembersSheetRow = (row, rowId, headings, existingProjects, existingDe
 
   return {
     id: 'member' + (rowId + 1),
-    name: row[indexOfItemWhichStartsWith(headings, 'ПІБ')],
-    status: row[indexOfItemWhichStartsWith(headings, 'Статус')],
-    picture: formatPictureSrc(row[indexOfItemWhichStartsWith(headings, 'Фотографія')]),
-    parent: row[indexOfItemWhichStartsWith(headings, 'Ментор')],
+    name: row[findStringInArray(headings, 'ПІБ')],
+    status: row[findStringInArray(headings, 'Статус')],
+    picture: formatPictureSrc(row[findStringInArray(headings, 'Фотографія')]),
+    parent: row[findStringInArray(headings, 'Ментор')] || null,
     activity: {
-      locally: row[indexOfItemWhichStartsWith(headings, 'Активний')] === "TRUE",
+      locally: row[findStringInArray(headings, 'Активний')] === "TRUE",
       internationally: internationalDeps.length > 0
     },
     details: {
-      birthday: parseDate(row[indexOfItemWhichStartsWith(headings, 'День народження')]),
-      recDate: parseDate(row[indexOfItemWhichStartsWith(headings, 'Рекрутмент')]),
-      faculty: row[indexOfItemWhichStartsWith(headings, 'Факультет')],
-      family: row[indexOfItemWhichStartsWith(headings, 'Сім\'я')],
+      birthday: moment(row[findStringInArray(headings, 'День народження')], 'DD.MM.YYYY'),
+      recDate: moment(row[findStringInArray(headings, 'Рекрутмент')], 'DD.MM.YYYY'),
+      faculty: row[findStringInArray(headings, 'Факультет')],
+      family: row[findStringInArray(headings, 'Сім\'я')],
       contacts: {
-        email: row[indexOfItemWhichStartsWith(headings, 'Email')],
-        telegram: row[indexOfItemWhichStartsWith(headings, 'Telegram')],
-        phone: row[indexOfItemWhichStartsWith(headings, 'Телефон')],
+        email: row[findStringInArray(headings, 'Email')],
+        telegram: row[findStringInArray(headings, 'Telegram')],
+        phone: row[findStringInArray(headings, 'Телефон')],
       },
       membership: {
-        board: row[indexOfItemWhichStartsWith(headings, 'Board')],
+        board: row[findStringInArray(headings, 'Board')],
         projects,
         departments,
         internationalDeps,
         internationalEvents,
       },
     },
-    history: row[indexOfItemWhichStartsWith(headings, 'Історія')].split('\n').filter(item => !!item),
+    history: row[findStringInArray(headings, 'Історія')].split('\n').filter(item => !!item),
   };
 };
 

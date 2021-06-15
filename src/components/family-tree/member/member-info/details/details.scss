@@ -9,15 +9,23 @@
   justify-content: center;
   max-width: 250px;
   padding: 10px 0 0 20px;
+  box-sizing: border-box;
   margin-left: 20px;
   border-left: 1px solid $light-grey-color;
-  @include transition(padding, opacity, margin, border-width);
+  min-width: 50%;
+  @include transition(padding, opacity, margin, border-width, min-width);
+
+  @include forMobile {
+    margin-left: 10px;
+    padding-left: 10px;
+  }
 
   &_collapsed {
     padding: 0;
     margin: 0;
     opacity: 0;
     border-width: 0;
+    min-width: 0;
   }
 
   &__item {

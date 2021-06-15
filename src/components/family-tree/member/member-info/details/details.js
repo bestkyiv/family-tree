@@ -1,83 +1,21 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import classnames from 'classnames';
-
-import howLongSince from 'utils/howLongSince';
-import formatDate from 'utils/formatDate';
 
 import Contacts from './contacts/contacts';
 
 import './details.scss';
+import moment from "moment";
 
-const propTypes = {
-  membership: PropTypes.object,
-  recDate: PropTypes.instanceOf(Date),
-  birthday: PropTypes.instanceOf(Date),
-  faculty: PropTypes.string,
-  family: PropTypes.string,
-  contacts: PropTypes.object,
-  isCollapsed: PropTypes.bool,
-};
-
-const defaultProps = {
-  isCollapsed: false,
-}
-
-class Details extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      areDetailsShown: false,
-      transitionStarted: false,
-    }
-    this.memberInfoRef = React.createRef();
-  }
-
-  render() {
-    const {contacts, isCollapsed} = this.props;
-
-    return (
-      <div className={classnames('details', {'details_collapsed': isCollapsed})}>
-        {this.getDetailsItems().map(item => (
-          <div
-            key={item.key}
-            className="details__item"
-          >
-            <div className="details__item-caption">{item.capture}</div>
-            <div className="details__item-value">
-              {
-                item.value.map((part, partId) => {
-                  const value = Array.isArray(part) ? part[0] : part;
-                  const addition = Array.isArray(part) ? part[1] : null;
-                  return (
-                    <span
-                        key={partId}
-                        className="details__item-value-part"
-                    >
-                      {value}
-                      {addition && <span className="details__item-value-addition"> ({addition})</span>}
-                      {partId !== item.value.length - 1 && ','}
-                    </span>
-                  );
-                })
-              }
-            </div>
-          </div>
-        ))}
-        <Contacts {...contacts} isCollapsed={isCollapsed}/>
-      </div>
-    );
-  }
-
-  getDetailsItems = () => {
-    const {
-      membership,
-      recDate,
-      birthday,
-      faculty,
-      family,
-    } = this.props;
-
+const Details = ({
+  membership,
+  recDate,
+  birthday,
+  faculty,
+  family,
+  contacts,
+  isCollapsed,
+}) => {
+  const getDetailsItems = () => {
     const detailsItems = [];
 
     if (membership.board) {
@@ -122,19 +60,22 @@ class Details extends Component {
       });
     }
 
-    if (birthday) {
+    if (birthday.isValid()) {
+      const roundingDefault = moment.relativeTimeRounding();
+      moment.relativeTimeRounding(Math.floor);
       detailsItems.push({
         key: 'birthday',
         capture: 'День народження',
-        value: [[formatDate(birthday), howLongSince(birthday).years]],
+        value: [[birthday.format('DD.MM.YYYY'), birthday.fromNow(true)]],
       });
+      moment.relativeTimeRounding(roundingDefault);
     }
 
-    if (recDate) {
+    if (recDate.isValid()) {
       detailsItems.push({
         key: 'recDate',
         capture: 'Рекрутмент',
-        value: [[formatDate(recDate), this.getTimeInBEST() + ' тому']],
+        value: [[recDate.format('DD.MM.YYYY'), recDate.fromNow()]],
       });
     }
 
@@ -157,27 +98,37 @@ class Details extends Component {
     return detailsItems;
   }
 
-  getTimeInBEST = () => {
-    const {recDate} = this.props;
-
-    const timeInBEST = howLongSince(recDate);
-
-    let formattedTimeInBEST = '';
-    if (timeInBEST.years) formattedTimeInBEST += timeInBEST.years;
-    if (timeInBEST.months) {
-      if (timeInBEST.years) formattedTimeInBEST += ' ';
-      formattedTimeInBEST += timeInBEST.months;
-    }
-    if (!timeInBEST.years || !timeInBEST.months) {
-      if (timeInBEST.years || timeInBEST.months) formattedTimeInBEST += ' ';
-      formattedTimeInBEST += timeInBEST.days;
-    }
-
-    return formattedTimeInBEST;
-  }
+  return (
+    <div className={classnames('details', {'details_collapsed': isCollapsed})}>
+      {getDetailsItems().map(item => (
+        <div
+          key={item.key}
+          className="details__item"
+        >
+          <div className="details__item-caption">{item.capture}</div>
+          <div className="details__item-value">
+            {
+              item.value.map((part, partId) => {
+                const value = Array.isArray(part) ? part[0] : part;
+                const addition = Array.isArray(part) ? part[1] : null;
+                return (
+                  <span
+                      key={partId}
+                      className="details__item-value-part"
+                  >
+                    {value}
+                    {addition && <span className="details__item-value-addition"> ({addition})</span>}
+                    {partId !== item.value.length - 1 && ','}
+                  </span>
+                );
+              })
+            }
+          </div>
+        </div>
+      ))}
+      <Contacts {...contacts} isCollapsed={isCollapsed}/>
+    </div>
+  );
 }
-
-Details.propTypes = propTypes;
-Details.defaultProps = defaultProps;
 
 export default Details;

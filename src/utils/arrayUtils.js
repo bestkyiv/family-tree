@@ -1,4 +1,10 @@
-const getRandomItemsFromArray = (arr, amount) => {
+export const findStringInArray = (array, string) => {
+  const regexp = new RegExp(`^${string}.*`, 'i');
+  const item = array.find(item => regexp.test(item.toLowerCase()));
+  return array.indexOf(item);
+}
+
+export const getRandomItemsFromArray = (arr, amount) => {
   const result = new Array(amount),
     taken = new Array(arr.length);
   let len = arr.length;
@@ -13,5 +19,3 @@ const getRandomItemsFromArray = (arr, amount) => {
 
   return result;
 }
-
-export default getRandomItemsFromArray;
