@@ -1,79 +1,46 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import classnames from 'classnames';
 
 import './toggleButton.scss';
 
-const propTypes = {
-  isOn: PropTypes.bool,
-  isCollapsed: PropTypes.bool,
-  handleSwitch: PropTypes.func.isRequired,
-};
 
-const defaultProps = {
-  isOn: false,
-  isCollapsed: false,
-}
+const ToggleButton = ({isOn, isCollapsed, onClick}) => {
+  const [transitionStarted, setTransitionStarted] = useState(false);
 
-class ToggleButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      transitionStarted: false,
-    }
-    this.toggleButtonRef = React.createRef();
-  }
+  const toggleButtonRef = React.createRef();
 
-  render() {
-    const {
-      isOn,
-      isCollapsed,
-    } = this.props;
+  const handleClick = () => {
+    onClick();
 
-    const toggleButtonClasses = classnames('toggle-button', {
-      'toggle-button_collapsed': isCollapsed,
-      'toggle-button_on': isOn,
-    });
-
-    return (
-      <button
-        ref={this.toggleButtonRef}
-        className={toggleButtonClasses}
-        onClick={this.handleClick}
-        onMouseDown={e => e.stopPropagation()}
-        onTransitionEnd={this.handleTransitionEnd}
-      >
-        {isOn ? '-' : '+'}
-      </button>
-    );
-  }
-
-  handleClick = () => {
-    const {handleSwitch} = this.props;
-
-    handleSwitch();
-    this.focusAfterTransition();
+    // focus after transition
+    setTransitionStarted(true);
   };
 
-  handleTransitionEnd = () => {
-    this.setState(prevState => {
-      if (prevState.transitionStarted) {
-        this.toggleButtonRef.current.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'smooth',
-        });
-      }
-      return {transitionStarted: false};
-    });
+  const handleTransitionEnd = () => {
+    if (transitionStarted) {
+      toggleButtonRef.current.scrollIntoView({
+        block: 'center',
+        inline: 'center',
+        behavior: 'smooth',
+      });
+      setTransitionStarted(false);
+    }
   }
 
-  focusAfterTransition = () => {
-    this.setState({transitionStarted: true});
-  }
+  return (
+    <button
+      ref={toggleButtonRef}
+      className={classnames('toggle-button', {
+        'toggle-button_collapsed': isCollapsed,
+        'toggle-button_on': isOn,
+      })}
+      onClick={handleClick}
+      onMouseDown={e => e.stopPropagation()}
+      onTransitionEnd={handleTransitionEnd}
+    >
+      {isOn ? '-' : '+'}
+    </button>
+  );
 }
-
-ToggleButton.propTypes = propTypes;
-ToggleButton.defaultProps = defaultProps;
 
 export default ToggleButton;

@@ -1,0 +1,34 @@
+@import './src/config/style/ui-variables';
+@import './src/config/style/mixins';
+
+.notification {
+  position: relative;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: $shadow;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  @include transition(opacity, transform, visibility);
+
+  &_hidden {
+    opacity: 0;
+    transform: translateY(30px);
+    visibility: hidden;
+  }
+
+  &__member-link {
+    cursor: pointer;
+    font-weight: bold;
+    color: $blue-color;
+  }
+
+  &__close-button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+  }
+}
