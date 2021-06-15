@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import classnames from 'classnames';
 
+import CloseButton from 'components/shared/close-button/closeButton';
+
 import GeneralInfo from './general-info/generalInfo';
 import Details from './details/details'
 
@@ -110,10 +112,7 @@ const MemberInfo = ({
           </ul>
         </div>
       )}
-      <button
-        className="member-info__close-details-button"
-        onClick={hideDetails}
-      >x</button>
+      <CloseButton onClose={hideDetails} customClasses="member-info__close-button" />
     </div>
   );
 }

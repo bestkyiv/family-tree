@@ -35,35 +35,6 @@
     display: flex;
   }
 
-  &__close-details-button {
-    cursor: pointer;
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    line-height: 15px;
-    overflow: hidden;
-    background: $lighter-grey-color;
-    color: #ffffff;
-    border-radius: 50%;
-    text-align: center;
-    visibility: hidden;
-    font-size: 0;
-    width: 0;
-    height: 0;
-    opacity: 0;
-    border: 0;
-    padding: 0;
-    @include transition(width, height, opacity, font-size, line-height, visibility);
-
-    #{$this}_details-shown & {
-      width: 15px;
-      height: 15px;
-      opacity: 1;
-      font-size: $font-size-xs;
-      visibility: visible;
-    }
-  }
-
   &__history {
     display: flex;
     flex-direction: column;
@@ -105,6 +76,22 @@
       font-size: 0;
       opacity: 0;
       visibility: hidden;
+    }
+  }
+
+  &__close-button {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    @include transition(width, height, opacity, font-size, line-height, visibility);
+
+    #{$this}_details-collapsed & {
+      visibility: hidden;
+      font-size: 0;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      line-height: 0;
     }
   }
 }
