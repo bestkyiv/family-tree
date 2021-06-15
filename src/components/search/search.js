@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {setHighlightedMemberAction} from 'store/reducer';
 
@@ -20,8 +20,6 @@ const Search = () => {
 
     const sortedResults = currentResults.sort((member1, member2) => {
       if (member1.details.recDate.isValid() && member2.details.recDate.isValid())
-        //   if (child1.details.recDate.getTime() !== child2.details.recDate.getTime())
-        //     return child1.details.recDate > child2.details.recDate ? 1 : -1;
         return member2.details.recDate.diff(member1.details.recDate);
 
       return member1.name > member2.name ? 1 : -1;
@@ -31,34 +29,13 @@ const Search = () => {
     setResults(sortedResults);
   };
 
-  const getHighlightedMemberAncestorsIds = id => {
-    const ancestorsIds = [];
-    let currentMember = membersList.filter(member => member.id === id)[0];
-
-    if (currentMember) {
-      while (currentMember.parent) {
-        const parentName = currentMember.parent;
-        currentMember = membersList.filter(member => member.name === parentName)[0];
-        ancestorsIds.push(currentMember.id);
+  useEffect(() => {
+    document.addEventListener('mousedown', () => {
+      if (query !== '') {
+        setResults([]);
       }
-    }
-
-    return ancestorsIds;
-  };
-
-  const highlightMember = id => {
-    const ancestorsIds = getHighlightedMemberAncestorsIds(id);
-    dispatch(setHighlightedMemberAction({id, ancestorsIds}));
-  }
-
-  const resetSearch = () => {
-    if (query !== '') {
-      setQuery('');
-      setResults([]);
-    }
-  };
-
-  document.addEventListener('click', resetSearch);
+    });
+  }, [query]);
 
   return (
     <div
@@ -67,6 +44,7 @@ const Search = () => {
     >
       <input
         onChange={handleChange}
+        onFocus={handleChange}
         className="search__input"
         type="text"
         placeholder="Кого шукаєш?"
@@ -80,8 +58,9 @@ const Search = () => {
             name={result.name}
             status={result.status}
             onClick={() => {
-              highlightMember(result.id);
-              resetSearch();
+              dispatch(setHighlightedMemberAction(result.id));
+              setQuery('');
+              setResults([]);
             }}
           />
         ))}

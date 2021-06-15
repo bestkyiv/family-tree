@@ -34,6 +34,7 @@ const Result = ({query, name, status, onClick}) => {
       className="result"
       onClick={onClick}
       onKeyUp={handleKeyUp}
+      onMouseDown={e => e.stopPropagation()}
     >
       <span className="result__name">
         {highlightQueryInName(name)}

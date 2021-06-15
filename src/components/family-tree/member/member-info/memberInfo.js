@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
-import {resetHighlightedMemberAction} from 'store/reducer';
 import classnames from 'classnames';
 
 import GeneralInfo from './general-info/generalInfo';
@@ -18,11 +16,9 @@ const MemberInfo = ({
   isCollapsed,
   highlighted,
 }) => {
-  const [areDetailsShown, setAreDetailsShown] = useState(false);
-  const [isHistoryShown, setIsHistoryShown] = useState(false);
+  const [areDetailsCollapsed, setAreDetailsCollapsed] = useState(true);
+  const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(true);
   const [transitionStarted, setTransitionStarted] = useState(false);
-
-  const dispatch = useDispatch();
 
   const memberInfoRef = React.createRef();
 
@@ -40,32 +36,32 @@ const MemberInfo = ({
   // Приховати деталі якщо мембер приховується
   useEffect(() => {
     if (isCollapsed) {
-      setAreDetailsShown(false);
-      setIsHistoryShown(false)
+      setAreDetailsCollapsed(true);
+      setIsHistoryCollapsed(true);
     }
   }, [isCollapsed]);
 
   // Приховати історію якщо ховаються деталі
   useEffect(() => {
-    if (!areDetailsShown) {
-      setIsHistoryShown(false)
+    if (areDetailsCollapsed) {
+      setIsHistoryCollapsed(true);
     }
-  }, [areDetailsShown]);
+  }, [areDetailsCollapsed]);
 
   // Навести фокус на мембера, якщо він став виділеним, або відкрились його деталі
   useEffect(() => {
-    if (highlighted || areDetailsShown) {
+    if (highlighted || !areDetailsCollapsed) {
       setTransitionStarted(true);
     }
-  }, [highlighted, areDetailsShown]);
+  }, [highlighted, areDetailsCollapsed]);
 
   const showDetails = () => {
-    setAreDetailsShown(true);
+    setAreDetailsCollapsed(false);
   }
 
   const hideDetails = e => {
     e.stopPropagation();
-    setAreDetailsShown(false);
+    setAreDetailsCollapsed(true);
   }
 
   return (
@@ -73,15 +69,14 @@ const MemberInfo = ({
       ref={memberInfoRef}
       className={classnames('member-info', {
         'member-info_collapsed': isCollapsed,
-        'member-info_details-shown': areDetailsShown,
+        'member-info_details-collapsed': areDetailsCollapsed,
         'member-info_highlighted': highlighted,
       })}
       onClick={showDetails}
       onTransitionEnd={handleTransitionEnd}
       onMouseDown={e => e.stopPropagation()}
-      onKeyPress={e => e.key === 'Enter' && !areDetailsShown ? showDetails() : null}
+      onKeyPress={e => e.key === 'Enter' && showDetails()}
       tabIndex={0}
-      onBlur={() => dispatch(resetHighlightedMemberAction())}
     >
       <div className="member-info__content">
         <GeneralInfo
@@ -95,21 +90,21 @@ const MemberInfo = ({
         />
         <Details
           {...details}
-          isCollapsed={isCollapsed || !areDetailsShown}
+          isCollapsed={isCollapsed || areDetailsCollapsed}
         />
       </div>
       {history.length > 0 && (
         <div className="member-info__history">
           <button
               className={classnames('member-info__history-toggle', {
-                'member-info__history-toggle_collapsed': isCollapsed || !areDetailsShown,
+                'member-info__history-toggle_collapsed': isCollapsed || areDetailsCollapsed,
               })}
-              onClick={() => setIsHistoryShown(!isHistoryShown)}
+              onClick={() => setIsHistoryCollapsed(!isHistoryCollapsed)}
           >
-            {isHistoryShown ? 'Приховати історію' : 'Показати історію'}
+            {isHistoryCollapsed ? 'Показати історію' : 'Приховати історію'}
           </button>
           <ul className={classnames('member-info__history-content', {
-            'member-info__history-content_shown': isHistoryShown,
+            'member-info__history-content_collapsed': isHistoryCollapsed,
           })}>
             {history.map((item, itemId) => <li key={itemId}>{item}</li>)}
           </ul>

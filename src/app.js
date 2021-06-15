@@ -17,21 +17,21 @@ import 'app.scss';
 const App = () => {
   const dispatch = useDispatch();
 
-  const findCellSpanInRow = (row, cellValue) => {
-    let span = 0;
-    const firstColumn = findStringInArray(row, cellValue);
-    if (firstColumn) {
-      span++;
-      let currentColumn = firstColumn;
-      while (!row[currentColumn + 1]) {
-        span++;
-        currentColumn++;
-      }
-    }
-    return [firstColumn, span];
-  }
-
   const loadMembersData = (apiKey, spreadsheetId) => {
+    const findCellSpanInRow = (row, cellValue) => {
+      let span = 0;
+      const firstColumn = findStringInArray(row, cellValue);
+      if (firstColumn) {
+        span++;
+        let currentColumn = firstColumn;
+        while (!row[currentColumn + 1]) {
+          span++;
+          currentColumn++;
+        }
+      }
+      return [firstColumn, span];
+    };
+
     return new Promise((resolve, reject) => {
       window.gapi.load('client', async () => {
         try {

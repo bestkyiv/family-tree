@@ -1,3 +1,5 @@
+import getMemberAncestorsIds from 'utils/getMemberAncestorsIds';
+
 const defaultState = {
   membersList: [],
   highlightedMember: {
@@ -20,7 +22,10 @@ export const reducer = (state = defaultState, action) => {
     case SET_HIGHLIGHTED_MEMBER:
       return {
         ...state,
-        highlightedMember: {...action.payload},
+        highlightedMember: {
+          id: action.payload,
+          ancestorsIds: getMemberAncestorsIds(state.membersList, action.payload),
+        },
       };
     case RESET_HIGHLIGHTED_MEMBER:
       return {
