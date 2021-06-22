@@ -1,8 +1,8 @@
 @import './src/config/style/mixins';
 
 .notifications-container {
-  position: absolute;
-  z-index: 10;
+  position: fixed;
+  z-index: 9;
   right: 40px;
   bottom: 40px;
   max-width: 400px;
