@@ -54,6 +54,7 @@ const NotificationsContainer = () => {
               >
                 {member.name}
               </span>
+              {' (' + member.details.birthday.fromNow(true) + ')'}
               {orderId !== birthdayBesties.length - 1 && ', '}
             </Fragment>
           ))}
