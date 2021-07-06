@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {ReactNodeArray, useEffect, useState} from 'react';
 import classnames from 'classnames';
 
 import CloseButton from 'components/shared/close-button/closeButton';
@@ -7,7 +7,11 @@ import './notification.scss';
 
 const NOTIFICATION_APPEARANCE_DELAY = 2000;
 
-const Notification = ({children}) => {
+type Props = {
+  children: ReactNodeArray,
+};
+
+const Notification = ({children}: Props) => {
   const [hasAppeared, setHasAppeared] = useState(false);
 
   useEffect(() => {

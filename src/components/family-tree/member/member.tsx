@@ -1,24 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
 import classnames from 'classnames';
 
-import sortingRule from 'utils/sortMembersRule';
+import {useMemberChildren, useHighlightedMember} from 'store/reducer';
 
 import MemberInfo from './member-info/memberInfo';
 import ToggleButton from './toggle-button/toggleButton';
 
+import {MemberInfoType} from 'config/memberType';
+
 import './member.scss';
 
+type Props = {
+  info: MemberInfoType,
+  isCollapsed?: boolean,
+};
 
-const Member = ({id, isCollapsed = false}) => {
+const Member = ({info, isCollapsed = false}: Props) => {
   const [areChildrenCollapsed, setAreChildrenCollapsed] = useState(true);
+  
+  const memberChildren = useMemberChildren(info.name);
 
-  const memberInfo = useSelector(state => state.membersList.find(member => member.id === id));
-  const memberChildren = useSelector(state => state.membersList
-    .filter(member => member.parent === memberInfo.name)
-    .sort(sortingRule));
-
-  const highlightedMember = useSelector(state => state.highlightedMember);
+  const highlightedMember = useHighlightedMember();
 
   const toggleAreChildrenCollapsed = () => setAreChildrenCollapsed(!areChildrenCollapsed);
 
@@ -29,22 +31,21 @@ const Member = ({id, isCollapsed = false}) => {
 
   // відобразити дітей, якщо один з нащадків виділений
   useEffect(() => {
-    if (highlightedMember.ancestorsIds.includes(id)) {
+    if (highlightedMember.ancestorsIds.includes(info.id)) {
       setAreChildrenCollapsed(false);
     }
-  }, [id, highlightedMember]);
+  }, [info.id, highlightedMember]);
 
   return (
     <div
-      id={id}
       className={classnames('member', {
-        'member_has-parent': memberInfo.parent,
+        'member_has-parent': info.parent,
         'member_collapsed': isCollapsed,
       })}
     >
       <MemberInfo
-        {...memberInfo}
-        highlighted={highlightedMember.id === id}
+        {...info}
+        highlighted={highlightedMember.id === info.id}
         isCollapsed={isCollapsed}
       />
       {memberChildren.length > 0 && (
@@ -55,8 +56,8 @@ const Member = ({id, isCollapsed = false}) => {
             onClick={toggleAreChildrenCollapsed}
           />
           <div className="member__children">
-            {memberChildren.map(child => (
-              <Member key={child.id} id={child.id} isCollapsed={isCollapsed || areChildrenCollapsed} />
+            {memberChildren.map((childInfo: MemberInfoType) => (
+              <Member key={childInfo.id} info={childInfo} isCollapsed={isCollapsed || areChildrenCollapsed} />
             ))}
           </div>
         </>

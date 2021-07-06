@@ -1,25 +1,29 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, KeyboardEvent, MouseEvent} from 'react';
 
 import './result.scss';
 
+type Props = {
+  query: string,
+  name: string,
+  status: string,
+  onClick: (e: MouseEvent) => void,
+};
 
-const Result = ({query, name, status, onClick}) => {
-  const buttonRef = React.createRef();
+const Result = ({query, name, status, onClick}: Props) => {
+  const buttonRef = React.createRef<HTMLButtonElement>();
 
-  const handleKeyUp = event => {
-    if (event.key === 'ArrowUp') {
-      if (buttonRef.current.previousElementSibling) {
-        buttonRef.current.previousElementSibling.focus();
-      }
+  const handleKeyUp = ({key}: KeyboardEvent<HTMLButtonElement>) => {
+    if (!buttonRef.current) return;
+
+    if (key === 'ArrowUp') {
+      (buttonRef.current.previousElementSibling as HTMLElement).focus();
     }
-    else if (event.key === 'ArrowDown') {
-      if (buttonRef.current.nextElementSibling) {
-        buttonRef.current.nextElementSibling.focus();
-      }
+    else if (key === 'ArrowDown') {
+      (buttonRef.current.nextElementSibling as HTMLElement).focus();
     }
   }
 
-  const highlightQueryInName = name => {
+  const highlightQueryInName = (name: string) => {
     const parts = name.split(new RegExp(`(${query})`, 'gi'));
     return parts.map((part, partId) => (
       <Fragment key={partId}>

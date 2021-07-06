@@ -3,7 +3,12 @@ import classnames from 'classnames';
 
 import './picture.scss';
 
-const Picture = ({src, isCollapsed}) => {
+type Props = {
+  src?: string,
+  isCollapsed: boolean,
+};
+
+const Picture = ({src, isCollapsed}: Props) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -11,7 +16,7 @@ const Picture = ({src, isCollapsed}) => {
       { src &&
         <img
           className={classnames('picture__img', {'picture__img_loaded': isLoaded})}
-          src={!isCollapsed || isLoaded ? src : null}
+          src={!isCollapsed || isLoaded ? src : undefined}
           alt="Member"
           draggable="false"
           onLoad={() => setIsLoaded(true)}

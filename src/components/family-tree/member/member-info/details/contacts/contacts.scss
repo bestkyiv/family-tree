@@ -26,7 +26,7 @@
     display: block;
     width: $icon-size;
     height: $icon-size;
-    @include transition(width, height, margin);
+    @include transition(width, height);
 
     #{$this}_collapsed & {
       width: 0;

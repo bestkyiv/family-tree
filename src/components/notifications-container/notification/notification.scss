@@ -24,6 +24,7 @@
     cursor: pointer;
     font-weight: bold;
     color: $blue-color;
+    white-space: nowrap;
   }
 
   &__close-button {
