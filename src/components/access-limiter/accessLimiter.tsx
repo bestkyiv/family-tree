@@ -1,20 +1,30 @@
-import React, {useEffect, useState} from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
 import cookie from 'react-cookies';
 
 import accessQuestions from 'config/accessQuestions';
 import {checkIfBestieEndpoint, adminTelegramUrl} from 'config/links';
 
+import loadMembersData from 'utils/loadMembersData';
 import {getRandomItemsFromArray} from 'utils/arrayUtils';
 
+import {setMembersListAction} from 'store/reducer';
+
 import Loader from 'components/loader/loader';
+
+import {AccessQuestionType} from 'config/accessQuestions';
 
 import './accessLimiter.scss';
 
 const QUESTIONS_AMOUNT = 3;
 const COOKIES_DURATION_IN_DAYS = 180;
 
-const AccessLimiter = ({children, onAccessGranted}) => {
-  const [questions, setQuestions] = useState([]);
+type Props = {
+  children: ReactElement[],
+};
+
+const AccessLimiter = ({children}: Props) => {
+  const [questions, setQuestions] = useState<Array<AccessQuestionType>>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [urlParams, setUrlParams] = useState('');
@@ -22,8 +32,11 @@ const AccessLimiter = ({children, onAccessGranted}) => {
   const [isAccessGranted, setIsAccessGranted] = useState(false); // чи бекенд надав доступ
   const [isLoading, setIsLoading] = useState(false); // чи запит обробляється
   const [showChildren, setShowChildren] = useState(false);
+  const [errorType, setErrorType] = useState('');
+  
+  const dispatch = useDispatch();
 
-  const inputRef = React.createRef();
+  const inputRef = React.createRef<HTMLInputElement>();
 
   const loadRandomQuestions = () => setQuestions(getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT));
 
@@ -33,26 +46,27 @@ const AccessLimiter = ({children, onAccessGranted}) => {
 
     if (spreadsheetId && gapiKey) {
       setShowChildren(true);
-
-      onAccessGranted(gapiKey, spreadsheetId)
-        .catch(errorMessage => {
+  
+      loadMembersData(gapiKey, spreadsheetId)
+        .then(membersList => dispatch(setMembersListAction(membersList)))
+        .catch(errorType => {
           setShowChildren(false);
-          loadRandomQuestions();
-
-          cookie.remove('gapiKey');
-          cookie.remove('spreadsheetId');
-
-          throw new Error(errorMessage);
+          setErrorType(errorType);
+          
+          if (errorType === 'gapiKeyError' || errorType === 'spreadsheetIDError') {
+            cookie.remove('gapiKey');
+            cookie.remove('spreadsheetId');
+          }
         });
     } else {
       loadRandomQuestions();
     }
-  }, [onAccessGranted]);
+  }, [dispatch]);
 
   useEffect(() => {
     // Залишати фокус на полі введення при зміні запитань
     if (!isLoading && !isSubmitted && currentQuestion > 0)
-      inputRef.current.focus();
+      (inputRef.current as HTMLInputElement).focus();
   }, [currentQuestion, isLoading, isSubmitted, inputRef]);
 
   const submit = async () => {
@@ -62,18 +76,25 @@ const AccessLimiter = ({children, onAccessGranted}) => {
     const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
     const responseJson = await response.json();
 
-    setIsLoading(false);
-
     if (responseJson.hasOwnProperty('apiKey') && responseJson.hasOwnProperty('spreadsheetId')) {
-      onAccessGranted(responseJson.apiKey, responseJson.spreadsheetId);
       setIsAccessGranted(true);
-
+  
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
-
+  
       cookie.save('spreadsheetId', responseJson.spreadsheetId, {expires: expirationDate});
       cookie.save('gapiKey', responseJson.apiKey, {expires: expirationDate});
+      
+      try {
+        const membersList = await loadMembersData(responseJson.apiKey, responseJson.spreadsheetId);
+        dispatch(setMembersListAction(membersList));
+      }
+      catch (errorType) {
+        setErrorType(errorType);
+      }
     }
+    
+    setIsLoading(false);
   };
 
   const showNextQuestion = () => {
@@ -89,6 +110,30 @@ const AccessLimiter = ({children, onAccessGranted}) => {
   const getContentVariant = () => {
     if (isLoading) {
       return <Loader size="s"/>;
+    }
+  
+    if (errorType) {
+      let errorMessage = 'трапилась невідома помилка';
+      switch (errorType) {
+        case 'gapiKeyError': errorMessage = 'виникли проблеми з ключем Google API'; break;
+        case 'spreadsheetIDError': errorMessage = 'ID ейчарської таблиці недійсний (її видалили чи перемістили)'; break;
+        case 'sheetNameError': errorMessage = 'в ейчарській таблиці аркуш Members перейменували або видалили'; break;
+        case 'emptySheetError': errorMessage = 'в ейчарській таблиці видалили усю інформацію з аркуша Members'; break;
+        case 'nameColumnError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонку ПІБ'; break;
+        case 'statusColumnError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонку Статус'; break;
+        case 'nameAndStatusColumnsError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонки ПІБ і Статус'; break;
+      }
+    
+      return (
+        <>
+          <div className="access-limiter__title">Знову ейчари шось поламали...</div>
+          <div className="access-limiter__description">
+            Здається у нас якісь трабли з деревом. Напиши&nbsp;
+            <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
+            &nbsp;, або комусь з HR відділу і скажи, що {errorMessage}.
+          </div>
+        </>
+      );
     }
 
     if (!isSubmitted) {
@@ -130,9 +175,9 @@ const AccessLimiter = ({children, onAccessGranted}) => {
           <div className="access-limiter__title">Вітаю, бестік!</div>
           <div className="access-limiter__description">
             Тут ти зможеш знайти інформацію про себе, усіх своїх предків, нащадків, братів та сестер.
-            Якщо ти раптом знайшов неточності або відсутність якоїсь інформації, то напиши
+            Якщо ти раптом знайшов неточності або відсутність якоїсь інформації, то напиши&nbsp;
             <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
-            або будь-кому з HR відділу.
+            &nbsp;або будь-кому з HR відділу.
           </div>
           <button
             type="button"
@@ -151,9 +196,9 @@ const AccessLimiter = ({children, onAccessGranted}) => {
         <div className="access-limiter__title">Упс!</div>
         <div className="access-limiter__description">
           Здається ти не бестік, тому я не можу дати тобі сюди доступ.
-          Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши
+          Якщо ти все таки бестік, але просто не впорався з запитаннями то напиши&nbsp;
           <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
-          за допомогою.
+          &nbsp;за допомогою.
         </div>
         <button
           type="button"
@@ -172,17 +217,15 @@ const AccessLimiter = ({children, onAccessGranted}) => {
     );
   };
 
-  if (showChildren) return children;
-
-  if (questions.length === 0) return null;
-
-  return (
-    <div className="access-limiter">
-      <div className="access-limiter__container">
-        {getContentVariant()}
-      </div>
-    </div>
-  );
+  return showChildren
+    ? <>{children}</>
+    : (questions.length !== 0 || errorType) ? (
+        <div className="access-limiter">
+          <div className="access-limiter__container">
+            {getContentVariant()}
+          </div>
+        </div>
+      ) : null;
 };
 
 export default AccessLimiter;

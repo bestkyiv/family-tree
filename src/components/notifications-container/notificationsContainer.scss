@@ -6,10 +6,12 @@
   right: 40px;
   bottom: 40px;
   max-width: 400px;
+  min-width: 300px;
 
   @include forMobile {
     bottom: 20px;
     right: 20px;
     max-width: calc(100vw - 40px);
+    width: 100%;
   };
 }

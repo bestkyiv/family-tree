@@ -5,15 +5,31 @@ import Picture from './picture/picture';
 
 import './generalInfo.scss';
 
+type Props = {
+  picture?: string,
+  name: string,
+  status: string,
+  activity?: {
+    locally?: boolean,
+    internationally?: boolean,
+  },
+  isCollapsed: boolean,
+  highlighted: boolean,
+  handleClick: () => void,
+};
+
 const GeneralInfo = ({
  picture,
  name,
  status,
- activity,
+ activity = {
+   locally: false,
+   internationally: false,
+ },
  isCollapsed,
  highlighted,
  handleClick,
-}) => (
+}: Props) => (
   <div
     className={classnames('general-info', {
       'general-info_collapsed': isCollapsed,

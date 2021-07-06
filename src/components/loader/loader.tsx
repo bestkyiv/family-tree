@@ -5,7 +5,11 @@ import './loader.scss';
 
 import bestLogo from './images/best-logo.svg';
 
-const Loader = ({size}) => (
+type Props = {
+  size?: 's',
+};
+
+const Loader = ({size}: Props) => (
   <div className="loader">
     <img
       src={bestLogo}

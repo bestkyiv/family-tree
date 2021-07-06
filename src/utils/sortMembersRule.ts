@@ -1,8 +1,9 @@
-import statuses from 'config/statuses';
+import {MemberInfoType} from 'config/memberType';
 
-const statusesOrder = Object.values(statuses);
-const sortingRule = (child1, child2) => {
-  if (child1.details.recDate.isValid() && child2.details.recDate.isValid())
+const statusesOrder = ['Observer', 'Baby', 'Guest', 'Full', 'Alumni'];
+
+const sortingRule = (child1: MemberInfoType, child2: MemberInfoType) => {
+  if (child1.details?.recDate && child2.details?.recDate)
     if (child1.details.recDate.diff(child2.details.recDate) !== 0)
       return child1.details.recDate.diff(child2.details.recDate);
 

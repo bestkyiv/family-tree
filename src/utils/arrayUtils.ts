@@ -1,10 +1,10 @@
-export const findStringInArray = (array, string) => {
+export const findStringInArray = (array: Array<string>, string: string): number => {
   const regexp = new RegExp(`^${string}.*`, 'i');
   const item = array.find(item => regexp.test(item.toLowerCase()));
-  return array.indexOf(item);
+  return item ? array.indexOf(item) : -1;
 }
 
-export const getRandomItemsFromArray = (arr, amount) => {
+export const getRandomItemsFromArray = (arr: Array<any>, amount: number) => {
   const result = new Array(amount),
     taken = new Array(arr.length);
   let len = arr.length;
