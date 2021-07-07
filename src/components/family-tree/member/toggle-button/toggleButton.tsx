@@ -39,10 +39,7 @@ const ToggleButton = ({isOn, onClick, isCollapsed}: Props) => {
       })}
       onClick={handleClick}
       onTransitionEnd={handleTransitionEnd}
-
-      // не прокидати mouseup і mousedown для того щоб не тригерився Canvas
-      onMouseDown={e => e.stopPropagation()}
-      onMouseUp={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
     >
       {isOn ? '-' : '+'}
     </button>

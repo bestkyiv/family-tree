@@ -73,8 +73,7 @@ const MemberInfo = ({
       })}
       onClick={showDetails}
       onTransitionEnd={handleTransitionEnd}
-      onMouseDown={e => e.stopPropagation()}
-      onMouseUp={e => e.stopPropagation()}
+      onMouseDown={e => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
       onKeyPress={e => e.key === 'Enter' && showDetails()}
       tabIndex={0}
     >
