@@ -32,7 +32,7 @@ const AccessLimiter = ({children}: Props) => {
   const [isAccessGranted, setIsAccessGranted] = useState(false); // чи бекенд надав доступ
   const [isLoading, setIsLoading] = useState(false); // чи запит обробляється
   const [showChildren, setShowChildren] = useState(false);
-  const [errorType, setErrorType] = useState('');
+  const [error, setError] = useState<{type: string, details?: string} | null>(null);
   
   const dispatch = useDispatch();
 
@@ -49,11 +49,11 @@ const AccessLimiter = ({children}: Props) => {
   
       loadMembersData(gapiKey, spreadsheetId)
         .then(membersList => dispatch(setMembersListAction(membersList)))
-        .catch(errorType => {
+        .catch(loadError => {
           setShowChildren(false);
-          setErrorType(errorType);
+          setError(loadError);
           
-          if (errorType === 'gapiKeyError' || errorType === 'spreadsheetIDError') {
+          if (loadError.type === 'gapiKeyError' || loadError.type === 'spreadsheetIDError') {
             cookie.remove('gapiKey');
             cookie.remove('spreadsheetId');
           }
@@ -89,8 +89,8 @@ const AccessLimiter = ({children}: Props) => {
         const membersList = await loadMembersData(responseJson.apiKey, responseJson.spreadsheetId);
         dispatch(setMembersListAction(membersList));
       }
-      catch (errorType) {
-        setErrorType(errorType);
+      catch (loadError) {
+        setError(loadError);
       }
     }
     
@@ -112,16 +112,14 @@ const AccessLimiter = ({children}: Props) => {
       return <Loader size="s"/>;
     }
   
-    if (errorType) {
+    if (error) {
       let errorMessage = 'трапилась невідома помилка';
-      switch (errorType) {
+      switch (error.type) {
         case 'gapiKeyError': errorMessage = 'виникли проблеми з ключем Google API'; break;
         case 'spreadsheetIDError': errorMessage = 'ID ейчарської таблиці недійсний (її видалили чи перемістили)'; break;
         case 'sheetNameError': errorMessage = 'в ейчарській таблиці аркуш Members перейменували або видалили'; break;
         case 'emptySheetError': errorMessage = 'в ейчарській таблиці видалили усю інформацію з аркуша Members'; break;
-        case 'nameColumnError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонку ПІБ'; break;
-        case 'statusColumnError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонку Статус'; break;
-        case 'nameAndStatusColumnsError': errorMessage = 'в ейчарській таблиці видалили чи перейменували колонки ПІБ і Статус'; break;
+        case 'columnsError': errorMessage = `в ейчарській таблиці видалили чи перейменували важливі колонки (${error.details})`; break;
       }
     
       return (
@@ -219,7 +217,7 @@ const AccessLimiter = ({children}: Props) => {
 
   return showChildren
     ? <>{children}</>
-    : (questions.length !== 0 || errorType) ? (
+    : (questions.length !== 0 || error) ? (
         <div className="access-limiter">
           <div className="access-limiter__container">
             {getContentVariant()}
