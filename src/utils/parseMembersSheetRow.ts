@@ -40,6 +40,14 @@ const parseMembersSheetRow = (
     status: row[columnIds.status],
   };
   
+  const isActiveLocally = row[columnIds.active] === 'TRUE';
+  const isActiveInternationally = !!row[columnIds.internationalDeps] || !!row[columnIds.internationalEvents];
+  if (isActiveLocally || isActiveInternationally) {
+    memberData.activity = {};
+    if (isActiveLocally) memberData.activity.locally = isActiveLocally;
+    if (isActiveInternationally) memberData.activity.internationally = isActiveInternationally;
+  }
+  
   const picture = row[columnIds.picture];
   if (picture) memberData.picture = formatPictureSrc(picture);
   
