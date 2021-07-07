@@ -14,7 +14,11 @@ export type MembershipValueType = Array<{
 }>;
 
 export type MembershipType = {
-  [key: string]: MembershipValueType
+  board?: string,
+  projects?: MembershipValueType,
+  departments?: MembershipValueType,
+  internationalDeps?: MembershipValueType,
+  internationalEvents?: MembershipValueType,
 };
 
 export type MemberDetailsType = {

@@ -71,7 +71,7 @@ const parseMembersSheetRow = (
   const membership: MembershipType = {};
   
   const boardValue = row[columnIds.board];
-  if (boardValue && !boardValue.includes('Подача')) membership.board = [{value: boardValue}];
+  if (boardValue && !boardValue.includes('Подача')) membership.board = boardValue;
   
   const projects: MembershipValueType =
     existingProjects
@@ -89,9 +89,10 @@ const parseMembersSheetRow = (
     existingDeps
       .filter((dep, depId) => row[columnIds.depsFirstColumn + depId])
       .map((dep, depId) => {
+        const result: {value: string, addition?: string} = {value: dep};
         const position = row[columnIds.depsFirstColumn + depId];
-        const addition = position !== 'Member' ? position : undefined;
-        return {value: dep, addition};
+        if (position && position !== 'Member') result.addition = position;
+        return result;
       });
   if (departments.length > 0) membership.departments = departments;
 

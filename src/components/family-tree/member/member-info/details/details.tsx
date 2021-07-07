@@ -35,11 +35,11 @@ const Details = ({
         detailsItems.push({
           key: 'board',
           capture: 'Board',
-          value: membership.board,
+          value: [{value: membership.board}],
         });
       }
   
-      if (membership.projects?.length > 0) {
+      if (membership.projects && membership.projects.length > 0) {
         membership.projects.forEach((project, projectId) => {
           if (project.addition) {
             detailsItems.push({
@@ -51,7 +51,7 @@ const Details = ({
         });
       }
   
-      if (membership.departments?.length > 0) {
+      if (membership.departments && membership.departments.length > 0) {
         detailsItems.push({
           key: 'departments',
           capture: 'Відділи та команди',
@@ -59,7 +59,7 @@ const Details = ({
         });
       }
   
-      if (membership.internationalDeps?.length > 0) {
+      if (membership.internationalDeps && membership.internationalDeps.length > 0) {
         detailsItems.push({
           key: 'internationalDeps',
           capture: 'Міжнар відділи та проекти',
@@ -67,7 +67,7 @@ const Details = ({
         });
       }
   
-      if (membership.internationalEvents?.length > 0) {
+      if (membership.internationalEvents && membership.internationalEvents.length > 0) {
         detailsItems.push({
           key: 'internationalDeps',
           capture: 'Міжнар івенти',
