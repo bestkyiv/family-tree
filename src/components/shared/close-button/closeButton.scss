@@ -3,16 +3,16 @@
 
 .close-button {
   position: relative;
-  cursor: pointer;
+  overflow: hidden;
   width: 18px;
   height: 18px;
-  line-height: 20px;
-  overflow: hidden;
-  background: $lighter-grey-color;
-  color: #ffffff;
-  border-radius: 50%;
-  text-align: center;
-  font-size: $font-size-xs;
-  border: 0;
   padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: $lighter-grey-color;
+  color: #fff;
+  font-size: $font-size-xs;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
 }

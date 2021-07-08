@@ -5,11 +5,11 @@
   overflow: hidden;
   width: $member-picture-width;
   height: $member-picture-height;
-  border-radius: 50%;
   margin-bottom: 10px;
+  border-radius: 50%;
   background-image: url('./images/default.jpg');
-  background-size: cover;
   background-position: center;
+  background-size: cover;
   @include transition(width, height, margin);
 
   &_collapsed {
@@ -19,9 +19,9 @@
   }
 
   &__img {
+    object-fit: cover;
     width: 100%;
     height: 100%;
-    object-fit: cover;
     opacity: 0;
     @include transition(opacity);
 

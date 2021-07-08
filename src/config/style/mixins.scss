@@ -1,15 +1,15 @@
 @import 'ui-variables';
 
 @mixin transition($transitions...) {
-  $unfoldedTransitions: ();
+  $unfolded-transitions: ();
   @each $transition in $transitions {
-    $unfoldedTransitions: append($unfoldedTransitions, $transition $animation-duration $animation-timing-function, comma);
+    $unfolded-transitions: append($unfolded-transitions, $transition $animation-duration $animation-timing-function, comma);
   }
 
-  transition: $unfoldedTransitions;
+  transition: $unfolded-transitions;
 }
 
-@mixin forMobile() {
+@mixin for-mobile() {
   @media (max-width: $mobile-breakpoint) {
     @content;
   }

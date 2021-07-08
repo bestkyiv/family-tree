@@ -3,25 +3,25 @@
 
 .search {
   position: absolute;
-  z-index: 10;
   top: 40px;
   left: 40px;
-  box-shadow: $shadow;
+  z-index: 10;
   min-width: 250px;
+  box-shadow: $shadow;
 
-  &__input {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid $lighter-grey-color;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: $font-size-s;
-  }
-
-  @include forMobile {
+  @include for-mobile {
     top: 15px;
     left: 15px;
     width: calc(100% - 30px);
+  }
+
+  &__input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid $lighter-grey-color;
+    border-radius: 5px;
+    font-size: $font-size-s;
   }
 
   &__results {

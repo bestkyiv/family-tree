@@ -27,7 +27,7 @@ const Result = ({query, name, status, onClick}: Props) => {
     const parts = name.split(new RegExp(`(${query})`, 'gi'));
     return parts.map((part, partId) => (
       <Fragment key={partId}>
-        {part.toLowerCase() === query.toLowerCase() ? <b>{part}</b> : part}
+        {part.toLowerCase() === query.toLowerCase() ? <span className="result__bold">{part}</span> : part}
       </Fragment>
     ));
   }
