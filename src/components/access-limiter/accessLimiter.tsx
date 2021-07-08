@@ -10,7 +10,7 @@ import {getRandomItemsFromArray} from 'utils/arrayUtils';
 
 import {setMembersListAction} from 'store/reducer';
 
-import Loader from 'components/loader/loader';
+import Loader from 'components/shared/loader/loader';
 
 import {AccessQuestionType} from 'config/accessQuestions';
 

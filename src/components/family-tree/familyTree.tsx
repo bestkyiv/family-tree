@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 
 import {resetHighlightedMemberAction, useFirstGeneration} from 'store/reducer';
 
-import Loader from 'components/loader/loader';
+import Loader from 'components/shared/loader/loader';
 
 import Member from './member/member';
 
