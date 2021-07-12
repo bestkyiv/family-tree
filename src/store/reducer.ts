@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
@@ -6,12 +7,15 @@ import sortingRule from 'utils/sortMembersRule';
 
 import { MemberInfoType, MemberIdType } from 'config/memberType';
 
+type Notification = { id: string, body: ReactElement };
+
 type State = {
   membersList: Array<MemberInfoType>,
   highlightedMember: {
     id: MemberIdType | null,
     ancestorsIds: Array<MemberIdType>,
   },
+  notifications: Array<Notification>
 };
 
 const defaultState: State = {
@@ -20,14 +24,21 @@ const defaultState: State = {
     id: null,
     ancestorsIds: [],
   },
+  notifications: [],
 };
 
 const SET_MEMBERS_LIST = 'SET_MEMBERS_LIST';
 const SET_HIGHLIGHTED_MEMBER = 'SET_HIGHLIGHTED_MEMBER';
 const RESET_HIGHLIGHTED_MEMBER = 'RESET_HIGHLIGHTED_MEMBER';
+const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
+const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 
 type ActionType = {
-  type: 'SET_MEMBERS_LIST' | 'SET_HIGHLIGHTED_MEMBER' | 'RESET_HIGHLIGHTED_MEMBER',
+  type: 'SET_MEMBERS_LIST'
+    | 'SET_HIGHLIGHTED_MEMBER'
+    | 'RESET_HIGHLIGHTED_MEMBER'
+    | 'ADD_NOTIFICATION'
+    | 'REMOVE_NOTIFICATION',
   payload: any,
 }
 
@@ -51,6 +62,16 @@ export const reducer = (state = defaultState, action: ActionType) => {
         ...state,
         highlightedMember: defaultState.highlightedMember,
       };
+    case ADD_NOTIFICATION:
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload],
+      };
+    case REMOVE_NOTIFICATION:
+      return {
+        ...state,
+        notifications: state.notifications.filter((notification) => notification.id !== action.payload),
+      };
     default:
       return state;
   }
@@ -59,6 +80,9 @@ export const reducer = (state = defaultState, action: ActionType) => {
 export const setMembersListAction = (payload: Array<MemberInfoType>) => ({ type: SET_MEMBERS_LIST, payload });
 export const setHighlightedMemberAction = (payload: MemberIdType) => ({ type: SET_HIGHLIGHTED_MEMBER, payload });
 export const resetHighlightedMemberAction = () => ({ type: RESET_HIGHLIGHTED_MEMBER });
+
+export const addNotification = (payload: Notification) => ({ type: ADD_NOTIFICATION, payload });
+export const removeNotification = (payload: string) => ({ type: REMOVE_NOTIFICATION, payload });
 
 export const useMembersList = () => useSelector((state: State) => state.membersList);
 export const useFirstGeneration = () => useMembersList()
@@ -90,3 +114,5 @@ export const useBirthdayMembers = () => useMembersList()
 
     return 0;
   });
+
+export const useNotifications = () => useSelector((state: State) => state.notifications);

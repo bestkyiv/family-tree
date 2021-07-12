@@ -12,9 +12,14 @@
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  @include transition(opacity, transform, visibility);
+  @include transition(opacity, transform, visibility, margin);
+
+  &:not(&:last-child) {
+    margin-bottom: 20px;
+  }
 
   &_hidden {
+    margin: 0;
     opacity: 0;
     visibility: hidden;
     transform: translateY(30px);

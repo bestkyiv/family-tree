@@ -25,7 +25,7 @@
     "no-invalid-position-at-import-rule": true,
     "declaration-block-no-redundant-longhand-properties": true,
     "declaration-no-important": true,
-    "selector-nested-pattern": "^(&(_{1,2}|:{1,2})[a-z-:]+(,\\s*)?)+$",
+    "selector-nested-pattern": "^(&(_{1,2}|:{1,2})[a-z-:()]+(,\\s*)?)+$",
     "no-unknown-animations": true,
     "number-no-trailing-zeros": true,
     "block-closing-brace-empty-line-before": "never",
