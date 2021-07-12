@@ -4,11 +4,12 @@ import cookie from 'react-cookies';
 
 import accessQuestions, { AccessQuestionType } from 'config/accessQuestions';
 import { checkIfBestieEndpoint, adminTelegramUrl } from 'config/links';
+import membersSheet from 'config/sheets';
 
 import loadMembersData from 'utils/loadMembersData';
 import { getRandomItemsFromArray } from 'utils/arrayUtils';
 
-import { setMembersListAction } from 'store/reducer';
+import { addNotification, setMembersListAction } from 'store/reducer';
 
 import Loader from 'components/shared/loader/loader';
 
@@ -24,7 +25,7 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
   const [urlParams, setUrlParams] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false); // чи був надісланий запит на бекенд
   const [isAccessGranted, setIsAccessGranted] = useState(false); // чи бекенд надав доступ
-  const [isLoading, setIsLoading] = useState(false); // чи запит обробляється
+  const [isSubmitProcessing, setIsSubmitProcessing] = useState(false); // чи запит обробляється
   const [showChildren, setShowChildren] = useState(false);
   const [error, setError] = useState<{type: string, details?: string} | null>(null);
 
@@ -37,6 +38,51 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
     setQuestions(randomQuestions);
   };
 
+  const processWarnings = (warnings: Array<string>) => {
+    if (!warnings.length) return;
+
+    const missingColumns: Array<string> = [];
+    warnings.forEach((warning) => {
+      if (warning === 'activeColumnMissing') {
+        missingColumns.push(membersSheet.columns.active);
+      } else if (warning === 'pictureColumnMissing') {
+        missingColumns.push(membersSheet.columns.picture);
+      } else if (warning === 'birthdayColumnMissing') {
+        missingColumns.push(membersSheet.columns.birthday);
+      } else if (warning === 'recDateColumnMissing') {
+        missingColumns.push(membersSheet.columns.recDate);
+      } else if (warning === 'facultyColumnMissing') {
+        missingColumns.push(membersSheet.columns.faculty);
+      } else if (warning === 'familyColumnMissing') {
+        missingColumns.push(membersSheet.columns.family);
+      } else if (warning === 'telegramColumnMissing') {
+        missingColumns.push(membersSheet.columns.telegram);
+      } else if (warning === 'emailColumnMissing') {
+        missingColumns.push(membersSheet.columns.email);
+      } else if (warning === 'phoneColumnMissing') {
+        missingColumns.push(membersSheet.columns.phone);
+      } else if (warning === 'historyColumnMissing') {
+        missingColumns.push(membersSheet.columns.history);
+      } else if (warning === 'boardColumnMissing') {
+        missingColumns.push(membersSheet.columns.board);
+      } else if (warning === 'internationalDepsColumnMissing') {
+        missingColumns.push(membersSheet.columns.internationalDeps);
+      } else if (warning === 'internationalEventsColumnMissing') {
+        missingColumns.push(membersSheet.columns.internationalEvents);
+      }
+    });
+
+    dispatch(addNotification({
+      id: 'loadDataWarning',
+      body: (
+        <>
+          Неможливо завантажити усі дані. Передай ейчарам, що хтось видалив чи перейменував такі рядки:&nbsp;
+          {missingColumns.join(', ')}
+        </>
+      ),
+    }));
+  };
+
   useEffect(() => {
     const gapiKey = cookie.load('gapiKey');
     const spreadsheetId = cookie.load('spreadsheetId');
@@ -45,7 +91,10 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
       setShowChildren(true);
 
       loadMembersData(gapiKey, spreadsheetId)
-        .then((membersList) => dispatch(setMembersListAction(membersList)))
+        .then(({ membersList, warnings }) => {
+          dispatch(setMembersListAction(membersList));
+          processWarnings(warnings);
+        })
         .catch((loadError) => {
           setShowChildren(false);
           setError(loadError);
@@ -62,37 +111,38 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
 
   useEffect(() => {
     // Залишати фокус на полі введення при зміні запитань
-    if (!isLoading && !isSubmitted && currentQuestion > 0) {
+    if (!isSubmitProcessing && !isSubmitted && currentQuestion > 0) {
       (inputRef.current as HTMLInputElement).focus();
     }
-  }, [currentQuestion, isLoading, isSubmitted, inputRef]);
+  }, [currentQuestion, isSubmitProcessing, isSubmitted, inputRef]);
 
   const submit = async () => {
     setIsSubmitted(true);
-    setIsLoading(true);
+    setIsSubmitProcessing(true);
 
-    const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
-    const responseJson = await response.json();
+    const endpointResponse = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
+    const endpointResponseJSON = await endpointResponse.json();
 
-    if (Object.prototype.hasOwnProperty.call(responseJson, 'apiKey')
-      && Object.prototype.hasOwnProperty.call(responseJson, 'spreadsheetId')) {
+    if (Object.prototype.hasOwnProperty.call(endpointResponseJSON, 'apiKey')
+      && Object.prototype.hasOwnProperty.call(endpointResponseJSON, 'spreadsheetId')) {
       setIsAccessGranted(true);
 
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
 
-      cookie.save('spreadsheetId', responseJson.spreadsheetId, { expires: expirationDate });
-      cookie.save('gapiKey', responseJson.apiKey, { expires: expirationDate });
+      cookie.save('spreadsheetId', endpointResponseJSON.spreadsheetId, { expires: expirationDate });
+      cookie.save('gapiKey', endpointResponseJSON.apiKey, { expires: expirationDate });
 
       try {
-        const membersList = await loadMembersData(responseJson.apiKey, responseJson.spreadsheetId);
-        dispatch(setMembersListAction(membersList));
+        const response = await loadMembersData(endpointResponseJSON.apiKey, endpointResponseJSON.spreadsheetId);
+        dispatch(setMembersListAction(response.membersList));
+        processWarnings(response.warnings);
       } catch (loadError) {
         setError(loadError);
       }
     }
 
-    setIsLoading(false);
+    setIsSubmitProcessing(false);
   };
 
   const showNextQuestion = () => {
@@ -106,8 +156,8 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
     (currentQuestion === questions.length - 1 ? submit : showNextQuestion)();
   };
 
-  const getContentVariant = () => {
-    if (isLoading) {
+  const getInnerBlockContentVariant = () => {
+    if (isSubmitProcessing) {
       return <Loader small />;
     }
 
@@ -229,7 +279,7 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
     return (
       <div className="access-limiter">
         <div className="access-limiter__container">
-          {getContentVariant()}
+          {getInnerBlockContentVariant()}
         </div>
       </div>
     );

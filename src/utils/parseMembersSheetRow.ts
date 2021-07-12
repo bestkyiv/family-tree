@@ -87,20 +87,20 @@ const parseMembersSheetRow = (
 
   const projects: MembershipValueType = existingProjects
     .filter((project, projectId) => {
-      const position = row[columnIds.projectsFirstColumn + projectId];
+      const position = row[columnIds.projectsFirst + projectId];
       return position && !position.includes('Подача');
     })
     .map((project, projectId) => ({
       value: project,
-      addition: row[columnIds.projectsFirstColumn + projectId],
+      addition: row[columnIds.projectsFirst + projectId],
     }));
   if (projects.length > 0) membership.projects = projects;
 
   const departments: MembershipValueType = existingDeps
-    .filter((dep, depId) => row[columnIds.depsFirstColumn + depId])
+    .filter((dep, depId) => row[columnIds.depsFirst + depId])
     .map((dep, depId) => {
       const result: {value: string, addition?: string} = { value: dep };
-      const position = row[columnIds.depsFirstColumn + depId];
+      const position = row[columnIds.depsFirst + depId];
       if (position && position !== 'Member') result.addition = position;
       return result;
     });
