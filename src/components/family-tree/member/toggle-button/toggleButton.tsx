@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import classnames from 'classnames';
 
 import './toggleButton.scss';
@@ -9,7 +9,7 @@ type Props = {
   isCollapsed: boolean,
 };
 
-const ToggleButton = ({isOn, onClick, isCollapsed}: Props) => {
+const ToggleButton: FunctionComponent<Props> = ({ isOn, onClick, isCollapsed }: Props) => {
   const [transitionStarted, setTransitionStarted] = useState(false);
 
   const toggleButtonRef = React.createRef<HTMLButtonElement>();
@@ -32,6 +32,7 @@ const ToggleButton = ({isOn, onClick, isCollapsed}: Props) => {
 
   return (
     <button
+      type="button"
       ref={toggleButtonRef}
       className={classnames('toggle-button', {
         'toggle-button_collapsed': isCollapsed,
@@ -39,7 +40,7 @@ const ToggleButton = ({isOn, onClick, isCollapsed}: Props) => {
       })}
       onClick={handleClick}
       onTransitionEnd={handleTransitionEnd}
-      onMouseDown={e => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
+      onMouseDown={(e) => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
     >
       {isOn ? '-' : '+'}
     </button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import classnames from 'classnames';
 
 import './loader.scss';
@@ -6,17 +6,15 @@ import './loader.scss';
 import bestLogo from './images/best-logo.svg';
 
 type Props = {
-  size?: 's',
+  small?: boolean,
 };
 
-const Loader = ({size}: Props) => (
+const Loader: FunctionComponent<Props> = ({ small }) => (
   <div className="loader">
     <img
       src={bestLogo}
       alt="Best Logo"
-      className={classnames('loader__logo', {
-        'loader__logo_s': size === 's',
-      })}
+      className={classnames('loader__logo', { loader__logo_s: small })}
     />
   </div>
 );

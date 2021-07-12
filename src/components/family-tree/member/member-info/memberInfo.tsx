@@ -1,21 +1,29 @@
-import React, {useEffect, useState} from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import classnames from 'classnames';
+
+import { MemberDetailsType } from 'config/memberType';
 
 import CloseButton from 'components/shared/close-button/closeButton';
 
 import GeneralInfo from './general-info/generalInfo';
-import Details from './details/details'
-
-import {MemberInfoType} from 'config/memberType';
+import Details from './details/details';
 
 import './memberInfo.scss';
 
-type Props = MemberInfoType & {
+type Props = {
+  picture?: string,
+  name: string,
+  status: string,
+  activity?: {
+    locally?: boolean,
+    internationally?: boolean,
+  },
+  details?: MemberDetailsType,
   isCollapsed: boolean,
   highlighted: boolean,
 };
 
-const MemberInfo = ({
+const MemberInfo: FunctionComponent<Props> = ({
   picture,
   name,
   status,
@@ -23,7 +31,7 @@ const MemberInfo = ({
   activity,
   isCollapsed,
   highlighted,
-}: Props) => {
+}) => {
   const [areDetailsCollapsed, setAreDetailsCollapsed] = useState(true);
   const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(true);
   const [transitionStarted, setTransitionStarted] = useState(false);
@@ -40,15 +48,19 @@ const MemberInfo = ({
       setTransitionStarted(false);
     }
   };
-  
+
   const showDetails = () => {
-    setAreDetailsCollapsed(false);
-    setTransitionStarted(true);
+    if (areDetailsCollapsed) {
+      setAreDetailsCollapsed(false);
+      setTransitionStarted(true);
+    }
   };
-  
+
   const hideDetails = () => {
-    setAreDetailsCollapsed(true);
-    setIsHistoryCollapsed(true);
+    if (!areDetailsCollapsed) {
+      setAreDetailsCollapsed(true);
+      setIsHistoryCollapsed(true);
+    }
   };
 
   // Приховати деталі якщо мембер приховується
@@ -71,11 +83,7 @@ const MemberInfo = ({
         'member-info_details-collapsed': areDetailsCollapsed,
         'member-info_highlighted': highlighted,
       })}
-      onClick={showDetails}
       onTransitionEnd={handleTransitionEnd}
-      onMouseDown={e => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
-      onKeyPress={e => e.key === 'Enter' && showDetails()}
-      tabIndex={0}
     >
       <div className="member-info__content">
         <GeneralInfo
@@ -87,34 +95,48 @@ const MemberInfo = ({
           highlighted={highlighted}
           handleClick={showDetails}
         />
-        {details && <Details {...details} isCollapsed={isCollapsed || areDetailsCollapsed} />}
+        {details && (
+          <Details
+            recDate={details.recDate}
+            birthday={details.birthday}
+            faculty={details.faculty}
+            family={details.family}
+            contacts={details.contacts}
+            membership={details.membership}
+            isCollapsed={isCollapsed || areDetailsCollapsed}
+          />
+        )}
       </div>
       {details?.history && (
         <div className="member-info__history">
           <button
-              className={classnames('member-info__history-toggle', {
-                'member-info__history-toggle_collapsed': isCollapsed || areDetailsCollapsed,
-              })}
-              onClick={() => setIsHistoryCollapsed(!isHistoryCollapsed)}
+            type="button"
+            className={classnames('member-info__history-toggle', {
+              'member-info__history-toggle_collapsed': isCollapsed || areDetailsCollapsed,
+            })}
+            onClick={() => setIsHistoryCollapsed(!isHistoryCollapsed)}
           >
             {isHistoryCollapsed ? 'Показати історію' : 'Приховати історію'}
           </button>
-          <ul className={classnames('member-info__history-content', {
-            'member-info__history-content_collapsed': isHistoryCollapsed,
-          })}>
-            {details.history.map((item, itemId) => <li key={itemId}>{item}</li>)}
+          <ul
+            className={classnames('member-info__history-content', {
+              'member-info__history-content_collapsed': isHistoryCollapsed,
+            })}
+          >
+            {
+              // список статичний
+              // eslint-disable-next-line react/no-array-index-key
+              details.history.map((item, itemId) => <li key={itemId}>{item}</li>)
+            }
           </ul>
         </div>
       )}
       <CloseButton
         customClasses="member-info__close-button"
-        onClose={(e) => {
-          e.stopPropagation();
-          hideDetails()
-        }}
+        onClose={hideDetails}
       />
     </div>
   );
-}
+};
 
 export default MemberInfo;

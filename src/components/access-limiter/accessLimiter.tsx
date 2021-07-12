@@ -1,29 +1,23 @@
-import React, {ReactElement, useEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import cookie from 'react-cookies';
 
-import accessQuestions from 'config/accessQuestions';
-import {checkIfBestieEndpoint, adminTelegramUrl} from 'config/links';
+import accessQuestions, { AccessQuestionType } from 'config/accessQuestions';
+import { checkIfBestieEndpoint, adminTelegramUrl } from 'config/links';
 
 import loadMembersData from 'utils/loadMembersData';
-import {getRandomItemsFromArray} from 'utils/arrayUtils';
+import { getRandomItemsFromArray } from 'utils/arrayUtils';
 
-import {setMembersListAction} from 'store/reducer';
+import { setMembersListAction } from 'store/reducer';
 
 import Loader from 'components/shared/loader/loader';
-
-import {AccessQuestionType} from 'config/accessQuestions';
 
 import './accessLimiter.scss';
 
 const QUESTIONS_AMOUNT = 3;
 const COOKIES_DURATION_IN_DAYS = 180;
 
-type Props = {
-  children: ReactElement[],
-};
-
-const AccessLimiter = ({children}: Props) => {
+const AccessLimiter: FunctionComponent = ({ children }) => {
   const [questions, setQuestions] = useState<Array<AccessQuestionType>>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState('');
@@ -33,12 +27,15 @@ const AccessLimiter = ({children}: Props) => {
   const [isLoading, setIsLoading] = useState(false); // чи запит обробляється
   const [showChildren, setShowChildren] = useState(false);
   const [error, setError] = useState<{type: string, details?: string} | null>(null);
-  
+
   const dispatch = useDispatch();
 
   const inputRef = React.createRef<HTMLInputElement>();
 
-  const loadRandomQuestions = () => setQuestions(getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT));
+  const loadRandomQuestions = () => {
+    const randomQuestions = getRandomItemsFromArray(accessQuestions, QUESTIONS_AMOUNT);
+    setQuestions(randomQuestions);
+  };
 
   useEffect(() => {
     const gapiKey = cookie.load('gapiKey');
@@ -46,13 +43,13 @@ const AccessLimiter = ({children}: Props) => {
 
     if (spreadsheetId && gapiKey) {
       setShowChildren(true);
-  
+
       loadMembersData(gapiKey, spreadsheetId)
-        .then(membersList => dispatch(setMembersListAction(membersList)))
-        .catch(loadError => {
+        .then((membersList) => dispatch(setMembersListAction(membersList)))
+        .catch((loadError) => {
           setShowChildren(false);
           setError(loadError);
-          
+
           if (loadError.type === 'gapiKeyError' || loadError.type === 'spreadsheetIDError') {
             cookie.remove('gapiKey');
             cookie.remove('spreadsheetId');
@@ -65,8 +62,9 @@ const AccessLimiter = ({children}: Props) => {
 
   useEffect(() => {
     // Залишати фокус на полі введення при зміні запитань
-    if (!isLoading && !isSubmitted && currentQuestion > 0)
+    if (!isLoading && !isSubmitted && currentQuestion > 0) {
       (inputRef.current as HTMLInputElement).focus();
+    }
   }, [currentQuestion, isLoading, isSubmitted, inputRef]);
 
   const submit = async () => {
@@ -76,24 +74,24 @@ const AccessLimiter = ({children}: Props) => {
     const response = await fetch(`${checkIfBestieEndpoint}?${urlParams}`);
     const responseJson = await response.json();
 
-    if (responseJson.hasOwnProperty('apiKey') && responseJson.hasOwnProperty('spreadsheetId')) {
+    if (Object.prototype.hasOwnProperty.call(responseJson, 'apiKey')
+      && Object.prototype.hasOwnProperty.call(responseJson, 'spreadsheetId')) {
       setIsAccessGranted(true);
-  
+
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + COOKIES_DURATION_IN_DAYS);
-  
-      cookie.save('spreadsheetId', responseJson.spreadsheetId, {expires: expirationDate});
-      cookie.save('gapiKey', responseJson.apiKey, {expires: expirationDate});
-      
+
+      cookie.save('spreadsheetId', responseJson.spreadsheetId, { expires: expirationDate });
+      cookie.save('gapiKey', responseJson.apiKey, { expires: expirationDate });
+
       try {
         const membersList = await loadMembersData(responseJson.apiKey, responseJson.spreadsheetId);
         dispatch(setMembersListAction(membersList));
-      }
-      catch (loadError) {
+      } catch (loadError) {
         setError(loadError);
       }
     }
-    
+
     setIsLoading(false);
   };
 
@@ -103,32 +101,42 @@ const AccessLimiter = ({children}: Props) => {
   };
 
   const handleButtonClick = () => {
-    setUrlParams(`${urlParams}${currentQuestion ? '&' : ''}${questions[currentQuestion].id}=${encodeURIComponent(currentAnswer)}`);
-    currentQuestion === questions.length - 1 ? submit() : showNextQuestion()
+    const newParam = `${questions[currentQuestion].id}=${encodeURIComponent(currentAnswer)}`;
+    setUrlParams(`${urlParams}${currentQuestion ? '&' : ''}${newParam}`);
+    (currentQuestion === questions.length - 1 ? submit : showNextQuestion)();
   };
 
   const getContentVariant = () => {
     if (isLoading) {
-      return <Loader size="s"/>;
+      return <Loader small />;
     }
-  
+
     if (error) {
-      let errorMessage = 'трапилась невідома помилка';
+      let errorMessage;
       switch (error.type) {
-        case 'gapiKeyError': errorMessage = 'виникли проблеми з ключем Google API'; break;
-        case 'spreadsheetIDError': errorMessage = 'ID ейчарської таблиці недійсний (її видалили чи перемістили)'; break;
-        case 'sheetNameError': errorMessage = 'в ейчарській таблиці аркуш Members перейменували або видалили'; break;
-        case 'emptySheetError': errorMessage = 'в ейчарській таблиці видалили усю інформацію з аркуша Members'; break;
-        case 'columnsError': errorMessage = `в ейчарській таблиці видалили чи перейменували важливі колонки (${error.details})`; break;
+        case 'gapiKeyError':
+          errorMessage = 'виникли проблеми з ключем Google API'; break;
+        case 'spreadsheetIDError':
+          errorMessage = 'ID ейчарської таблиці недійсний (її видалили чи перемістили)'; break;
+        case 'sheetNameError':
+          errorMessage = 'в ейчарській таблиці аркуш Members перейменували або видалили'; break;
+        case 'emptySheetError':
+          errorMessage = 'в ейчарській таблиці видалили усю інформацію з аркуша Members'; break;
+        case 'columnsError':
+          errorMessage = `в ейчарській таблиці видалили чи перейменували важливі колонки (${error.details})`; break;
+        default:
+          errorMessage = 'трапилась невідома помилка';
       }
-    
+
       return (
         <>
           <div className="access-limiter__title">Знову ейчари шось поламали...</div>
           <div className="access-limiter__description">
             Здається у нас якісь трабли з деревом. Напиши&nbsp;
             <a href={adminTelegramUrl} target="_blank" rel="noreferrer">@dimamyhal</a>
-            &nbsp;, або комусь з HR відділу і скажи, що {errorMessage}.
+            &nbsp;, або комусь з HR відділу і скажи, що&nbsp;
+            { errorMessage }
+            .
           </div>
         </>
       );
@@ -145,8 +153,8 @@ const AccessLimiter = ({children}: Props) => {
               ref={inputRef}
               type="text"
               className="access-limiter__answer-input"
-              onChange={({target}) => setCurrentAnswer(target.value)}
-              onKeyPress={e => e.key === 'Enter' && currentAnswer ? handleButtonClick() : null}
+              onChange={({ target }) => setCurrentAnswer(target.value)}
+              onKeyPress={({ key }) => (key === 'Enter' && currentAnswer ? handleButtonClick() : null)}
               value={currentAnswer}
               autoFocus
             />
@@ -215,15 +223,19 @@ const AccessLimiter = ({children}: Props) => {
     );
   };
 
-  return showChildren
-    ? <>{children}</>
-    : (questions.length !== 0 || error) ? (
-        <div className="access-limiter">
-          <div className="access-limiter__container">
-            {getContentVariant()}
-          </div>
+  if (showChildren) return <>{children}</>;
+
+  if (questions.length !== 0 || error) {
+    return (
+      <div className="access-limiter">
+        <div className="access-limiter__container">
+          {getContentVariant()}
         </div>
-      ) : null;
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default AccessLimiter;
