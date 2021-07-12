@@ -20,9 +20,9 @@ const Result: FunctionComponent<Props> = ({
   const handleKeyUp = ({ key }: KeyboardEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return;
 
-    if (key === 'ArrowUp') {
+    if (key === 'ArrowUp' && buttonRef.current.previousElementSibling) {
       (buttonRef.current.previousElementSibling as HTMLElement).focus();
-    } else if (key === 'ArrowDown') {
+    } else if (key === 'ArrowDown' && buttonRef.current.nextElementSibling) {
       (buttonRef.current.nextElementSibling as HTMLElement).focus();
     }
   };

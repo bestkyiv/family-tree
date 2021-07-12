@@ -15,7 +15,7 @@ type Props = {
   },
   isCollapsed: boolean,
   highlighted: boolean,
-  handleClick: () => void,
+  handleClick?: () => void,
 };
 
 const GeneralInfo: FunctionComponent<Props> = ({
@@ -33,11 +33,10 @@ const GeneralInfo: FunctionComponent<Props> = ({
       'general-info_highlighted': highlighted,
     })}
     onClick={handleClick}
-    onMouseDown={(e) => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
-    onKeyPress={({ key }) => key === 'Enter' && handleClick()}
+    onKeyPress={({ key }) => key === 'Enter' && handleClick && handleClick()}
     role="checkbox"
     aria-checked="false"
-    tabIndex={0}
+    tabIndex={handleClick ? 0 : -1}
   >
     <Picture
       src={picture}

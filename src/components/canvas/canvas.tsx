@@ -16,12 +16,14 @@ const Canvas: FunctionComponent = ({ children }) => {
   const canvasRef = React.createRef<HTMLDivElement>();
 
   const startDragging = (e: MouseEvent) => {
-    setIsGrabbed(true);
-    setGrabCoords({ x: e.pageX, y: e.pageY });
-    setPosition({
-      x: (canvasRef.current as HTMLElement).scrollLeft,
-      y: (canvasRef.current as HTMLElement).scrollTop,
-    });
+    if (canvasRef && canvasRef.current) {
+      setIsGrabbed(true);
+      setGrabCoords({ x: e.pageX, y: e.pageY });
+      setPosition({
+        x: canvasRef.current.scrollLeft,
+        y: canvasRef.current.scrollTop,
+      });
+    }
   };
 
   const stopDragging = () => {
@@ -34,10 +36,12 @@ const Canvas: FunctionComponent = ({ children }) => {
   const onDragging = (e: MouseEvent) => {
     if (!isGrabbed) return;
 
-    if (position.x !== null && position.y !== null && grabCoords.x !== null && grabCoords.y !== null) {
+    if (position.x !== null && position.y !== null
+      && grabCoords.x !== null && grabCoords.y !== null
+      && canvasRef && canvasRef.current) {
       const offsetX = position.x + grabCoords.x - e.pageX;
       const offsetY = position.y + grabCoords.y - e.pageY;
-      (canvasRef.current as HTMLElement).scroll(offsetX, offsetY);
+      canvasRef.current.scroll(offsetX, offsetY);
     }
   };
 

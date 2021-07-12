@@ -20,8 +20,8 @@ const ToggleButton: FunctionComponent<Props> = ({ isOn, onClick, isCollapsed }: 
   };
 
   const handleTransitionEnd = () => {
-    if (transitionStarted) {
-      (toggleButtonRef.current as HTMLElement).scrollIntoView({
+    if (transitionStarted && toggleButtonRef && toggleButtonRef.current) {
+      toggleButtonRef.current.scrollIntoView({
         block: 'center',
         inline: 'center',
         behavior: 'smooth',

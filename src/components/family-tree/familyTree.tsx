@@ -17,6 +17,7 @@ const FamilyTree: FunctionComponent = () => {
   useEffect(() => {
     document.addEventListener('click', () => dispatch(resetHighlightedMemberAction()));
     document.addEventListener('touchstart', () => dispatch(resetHighlightedMemberAction()));
+    document.addEventListener('onKeyPress', () => dispatch(resetHighlightedMemberAction()));
   }, [dispatch]);
 
   return !firstGeneration.length ? <Loader /> : (

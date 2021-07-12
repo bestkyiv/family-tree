@@ -39,8 +39,8 @@ const MemberInfo: FunctionComponent<Props> = ({
   const memberInfoRef = React.createRef<HTMLDivElement>();
 
   const handleTransitionEnd = () => {
-    if (transitionStarted) {
-      (memberInfoRef.current as HTMLElement).scrollIntoView({
+    if (transitionStarted && memberInfoRef && memberInfoRef.current) {
+      memberInfoRef.current.scrollIntoView({
         block: 'center',
         inline: 'center',
         behavior: 'smooth',
@@ -50,10 +50,8 @@ const MemberInfo: FunctionComponent<Props> = ({
   };
 
   const showDetails = () => {
-    if (areDetailsCollapsed) {
-      setAreDetailsCollapsed(false);
-      setTransitionStarted(true);
-    }
+    setAreDetailsCollapsed(false);
+    setTransitionStarted(true);
   };
 
   const hideDetails = () => {
@@ -76,14 +74,16 @@ const MemberInfo: FunctionComponent<Props> = ({
   }, [highlighted]);
 
   return (
+    // лише для зупинки прокидання mousedown
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={memberInfoRef}
       className={classnames('member-info', {
         'member-info_collapsed': isCollapsed,
         'member-info_details-collapsed': areDetailsCollapsed,
-        'member-info_highlighted': highlighted,
       })}
       onTransitionEnd={handleTransitionEnd}
+      onMouseDown={(e) => e.stopPropagation()} // не прокидати mousedown для того щоб не тригерився Canvas
     >
       <div className="member-info__content">
         <GeneralInfo
@@ -93,7 +93,7 @@ const MemberInfo: FunctionComponent<Props> = ({
           isCollapsed={isCollapsed}
           activity={activity}
           highlighted={highlighted}
-          handleClick={showDetails}
+          handleClick={areDetailsCollapsed ? showDetails : undefined}
         />
         {details && (
           <Details
