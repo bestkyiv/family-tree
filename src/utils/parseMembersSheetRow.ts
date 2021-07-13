@@ -70,7 +70,7 @@ const parseMembersSheetRow = (
   if (faculty) details.faculty = faculty;
 
   const family = row[columnIds.family];
-  if (family) details.faculty = family;
+  if (family) details.family = family;
 
   const telegram = validate(row[columnIds.telegram], telegramRegExp);
   const email = validate(row[columnIds.email], emailRegExp);
