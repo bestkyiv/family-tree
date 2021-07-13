@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import AccessLimiter from 'components/access-limiter/accessLimiter';
 import Search from 'components/search/search';
@@ -6,9 +6,9 @@ import Canvas from 'components/canvas/canvas';
 import FamilyTree from 'components/family-tree/familyTree';
 import NotificationsContainer from 'components/notifications-container/notificationsContainer';
 
-import 'app.scss';
+import './app.scss';
 
-const App = () => (
+const App: FunctionComponent = () => (
   <AccessLimiter>
     <Search />
     <NotificationsContainer />

@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import classnames from 'classnames';
 
-import {useMemberChildren, useHighlightedMember} from 'store/reducer';
+import { useMemberChildren, useHighlightedMember } from 'store/reducer';
+
+import { MemberInfoType } from 'config/memberType';
 
 import MemberInfo from './member-info/memberInfo';
 import ToggleButton from './toggle-button/toggleButton';
-
-import {MemberInfoType} from 'config/memberType';
 
 import './member.scss';
 
@@ -15,9 +15,9 @@ type Props = {
   isCollapsed?: boolean,
 };
 
-const Member = ({info, isCollapsed = false}: Props) => {
+const Member: FunctionComponent<Props> = ({ info, isCollapsed = false }) => {
   const [areChildrenCollapsed, setAreChildrenCollapsed] = useState(true);
-  
+
   const memberChildren = useMemberChildren(info.name);
 
   const highlightedMember = useHighlightedMember();
@@ -40,11 +40,15 @@ const Member = ({info, isCollapsed = false}: Props) => {
     <div
       className={classnames('member', {
         'member_has-parent': info.parent,
-        'member_collapsed': isCollapsed,
+        member_collapsed: isCollapsed,
       })}
     >
       <MemberInfo
-        {...info}
+        picture={info.picture}
+        name={info.name}
+        status={info.status}
+        details={info.details}
+        activity={info.activity}
         highlighted={highlightedMember.id === info.id}
         isCollapsed={isCollapsed}
       />
@@ -64,6 +68,6 @@ const Member = ({info, isCollapsed = false}: Props) => {
       )}
     </div>
   );
-}
+};
 
 export default Member;

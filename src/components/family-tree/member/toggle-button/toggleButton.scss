@@ -5,29 +5,20 @@
   $margin-bottom: 20px;
 
   position: relative;
-  cursor: pointer;
   width: 16px;
   height: 16px;
-  font-size: $font-size-s;
-  font-weight: 500;
-  line-height: 16px;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: $blue-color;
-  color: #ffffff;
+  color: #fff;
+  font-weight: 500;
+  font-size: $font-size-s;
+  line-height: 16px;
   text-align: center;
-  margin-top: 10px;
-  border: 0;
-  padding: 0;
+  cursor: pointer;
   @include transition(opacity, height, width, margin, font-size, visibility);
-
-  &_collapsed {
-    margin: 0;
-    opacity: 0;
-    height: 0;
-    width: 0;
-    font-size: 0;
-    visibility: hidden;
-  }
 
   &::after {
     content: '';
@@ -41,12 +32,21 @@
     @include transition(opacity, height);
   }
 
+  &_collapsed {
+    width: 0;
+    height: 0;
+    margin: 0;
+    font-size: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
   &_on {
     margin-bottom: $margin-bottom;
 
     &::after {
-      opacity: 1;
       height: 12px;
+      opacity: 1;
     }
   }
 }

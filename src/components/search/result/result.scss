@@ -2,17 +2,18 @@
 @import './src/config/style/mixins';
 
 .result {
-  display: block;
-  border: 0;
-  width: 100%;
   position: relative;
-  cursor: pointer;
+  display: block;
+  width: 100%;
   padding: 5px 10px;
-  background: #ffffff;
+  border: 0;
+  background: #fff;
   text-align: left;
+  cursor: pointer;
   @include transition(background);
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: $light-grey-color;
   }
 
@@ -24,18 +25,18 @@
     padding-bottom: 10px;
   }
 
-  b {
-    color: $blue-color;
-    font-weight: 700;
-  }
-
   &__name {
     font-size: $font-size-m;
   }
 
+  &__bold {
+    color: $blue-color;
+    font-weight: 700;
+  }
+
   &__status {
-    font-size: $font-size-xs;
-    color: $grey-color;
     margin-left: 5px;
+    color: $grey-color;
+    font-size: $font-size-xs;
   }
 }

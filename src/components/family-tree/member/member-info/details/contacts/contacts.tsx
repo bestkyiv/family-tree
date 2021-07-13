@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import classnames from 'classnames';
 
-import {ContactsType} from 'config/memberType';
+import { ContactsType } from 'config/memberType';
 
 import './contacts.scss';
 
@@ -13,35 +13,45 @@ type Props = ContactsType & {
   isCollapsed: boolean,
 };
 
-const Contacts = ({telegram, email, phone, isCollapsed}: Props) =>
+const Contacts: FunctionComponent<Props> = ({
+  telegram,
+  email,
+  phone,
+  isCollapsed,
+}) => (
   (telegram || email || phone)
-    ? <div className={classnames('contacts', {'contacts_collapsed': isCollapsed})}>
-        {telegram &&
+    ? (
+      <div className={classnames('contacts', { contacts_collapsed: isCollapsed })}>
+        {telegram && (
           <a
             href={`https://t.me/${telegram.substring(1)}`}
             target="_blank"
             rel="noreferrer"
             className="contacts__link"
           >
-            <img src={telegramIcon} alt="Telegram" className="contacts__icon"/>
-          </a>}
-        {email &&
+            <img src={telegramIcon} alt="Telegram" className="contacts__icon" />
+          </a>
+        )}
+        {email && (
           <a
             href={`mailto:${email}`}
             target="_blank"
             rel="noreferrer"
             className="contacts__link"
           >
-            <img src={emailIcon} alt="Email" className="contacts__icon"/>
-          </a>}
-        {phone &&
+            <img src={emailIcon} alt="Email" className="contacts__icon" />
+          </a>
+        )}
+        {phone && (
           <a
             href={`tel:${phone}`}
             className="contacts__link"
           >
-            <img src={phoneIcon} alt="Phone" className="contacts__icon"/>
-          </a>}
+            <img src={phoneIcon} alt="Phone" className="contacts__icon" />
+          </a>
+        )}
       </div>
-    : null;
+    ) : null
+);
 
 export default Contacts;

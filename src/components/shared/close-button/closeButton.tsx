@@ -1,13 +1,23 @@
-import React, {MouseEvent} from 'react';
+import React, { FunctionComponent } from 'react';
 
 import './closeButton.scss';
 
 type Props = {
-  onClose: (e: MouseEvent) => void,
+  onClose: () => void,
   customClasses?: string,
 };
 
-const CloseButton = ({onClose, customClasses}: Props) =>
-  <button className={'close-button ' + customClasses} onClick={onClose}>✕</button>;
+const CloseButton: FunctionComponent<Props> = ({ onClose, customClasses }) => (
+  <button
+    type="button"
+    className={`close-button ${customClasses}`}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClose();
+    }}
+  >
+    ✕
+  </button>
+);
 
 export default CloseButton;

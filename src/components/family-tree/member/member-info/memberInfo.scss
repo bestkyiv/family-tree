@@ -5,16 +5,16 @@
   $this: &;
 
   position: relative;
-  cursor: default;
-  border-radius: 10px;
+  box-sizing: border-box;
   margin: 0 20px;
   padding: 20px;
+  border-radius: 10px;
+  background: #fff;
   box-shadow: $shadow;
-  box-sizing: border-box;
-  background: #ffffff;
+  cursor: default;
   @include transition(margin, padding, box-shadow, visibility);
 
-  @include forMobile {
+  @include for-mobile {
     max-width: 90vw;
   }
 
@@ -25,9 +25,9 @@
   }
 
   &_details-collapsed {
-    cursor: pointer;
     padding: 0;
     box-shadow: 0 0 0 transparent;
+    cursor: pointer;
     user-select: none;
   }
 
@@ -42,37 +42,37 @@
   }
 
   &__history-content {
-    font-family: $font-family;
     margin: 20px 0 0;
-    font-size: $font-size-s;
-    visibility: visible;
-    list-style-type: none;
     padding: 0;
+    list-style-type: none;
+    font-size: $font-size-s;
+    font-family: $font-family;
+    visibility: visible;
     @include transition(margin, opacity, font-size, visibility);
 
     &_collapsed {
       margin: 0;
-      opacity: 0;
       font-size: 0;
+      opacity: 0;
       visibility: hidden;
     }
   }
 
   &__history-toggle {
-    padding: 0;
+    width: 100%;
+    height: 30px;
     margin: 10px 0 -15px;
-    cursor: pointer;
+    padding: 0;
     border: 0;
     background: transparent;
-    width: 100%;
-    font-size: $font-size-xs;
     color: $lighter-grey-color;
-    height: 30px;
+    font-size: $font-size-xs;
+    cursor: pointer;
     @include transition(margin, height, font-size, opacity, visibility);
 
     &_collapsed {
-      margin: 0;
       height: 0;
+      margin: 0;
       font-size: 0;
       opacity: 0;
       visibility: hidden;
@@ -86,12 +86,12 @@
     @include transition(width, height, opacity, font-size, line-height, visibility);
 
     #{$this}_details-collapsed & {
-      visibility: hidden;
-      font-size: 0;
       width: 0;
       height: 0;
-      opacity: 0;
+      font-size: 0;
       line-height: 0;
+      opacity: 0;
+      visibility: hidden;
     }
   }
 }
