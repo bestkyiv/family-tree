@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.af415f36.chunk.css",
+    "main.js": "/static/js/main.78b1a9d1.chunk.js",
+    "main.js.map": "/static/js/main.78b1a9d1.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.b3f2af5c.js",
+    "runtime-main.js.map": "/static/js/runtime-main.b3f2af5c.js.map",
+    "static/js/2.8d5e84d6.chunk.js": "/static/js/2.8d5e84d6.chunk.js",
+    "static/js/2.8d5e84d6.chunk.js.map": "/static/js/2.8d5e84d6.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.af415f36.chunk.css.map": "/static/css/main.af415f36.chunk.css.map",
+    "static/js/2.8d5e84d6.chunk.js.LICENSE.txt": "/static/js/2.8d5e84d6.chunk.js.LICENSE.txt",
+    "static/media/best-logo.71461e71.svg": "/static/media/best-logo.71461e71.svg",
+    "static/media/picture.scss": "/static/media/default.7ae9c1aa.jpg",
+    "static/media/email.f8bc47e6.svg": "/static/media/email.f8bc47e6.svg",
+    "static/media/phone.5cbc1e44.svg": "/static/media/phone.5cbc1e44.svg",
+    "static/media/telegram.ace2efdd.svg": "/static/media/telegram.ace2efdd.svg",
+    "static/media/generalInfo.scss": "/static/media/world.80563e39.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.b3f2af5c.js",
+    "static/js/2.8d5e84d6.chunk.js",
+    "static/css/main.af415f36.chunk.css",
+    "static/js/main.78b1a9d1.chunk.js"
+  ]
+}
