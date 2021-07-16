@@ -86,24 +86,29 @@ const parseMembersSheetRow = (
   if (boardValue && !boardValue.includes('Подача')) membership.board = boardValue;
 
   const projects: MembershipValueType = existingProjects
-    .filter((project, projectId) => {
+    .reduce((filtered: MembershipValueType, project, projectId) => {
       const position = row[columnIds.projectsFirst + projectId];
-      return position && !position.includes('Подача');
-    })
-    .map((project, projectId) => ({
-      value: project,
-      addition: row[columnIds.projectsFirst + projectId],
-    }));
+
+      if (position && !position.includes('Подача')) {
+        filtered.push({
+          value: project,
+          addition: row[columnIds.projectsFirst + projectId],
+        });
+      }
+      return filtered;
+    }, []);
   if (projects.length > 0) membership.projects = projects;
 
   const departments: MembershipValueType = existingDeps
-    .filter((dep, depId) => row[columnIds.depsFirst + depId])
-    .map((dep, depId) => {
-      const result: {value: string, addition?: string} = { value: dep };
-      const position = row[columnIds.depsFirst + depId];
-      if (position && position !== 'Member') result.addition = position;
-      return result;
-    });
+    .reduce((filtered: MembershipValueType, dep, depId) => {
+      if (row[columnIds.depsFirst + depId]) {
+        const result: { value: string, addition?: string } = { value: dep };
+        const position = row[columnIds.depsFirst + depId];
+        if (position && position !== 'Member') result.addition = position;
+        filtered.push(result);
+      }
+      return filtered;
+    }, []);
   if (departments.length > 0) membership.departments = departments;
 
   const internationalDeps = parseMultilineMembershipValue(row[columnIds.internationalDeps]);
