@@ -10,6 +10,9 @@ import {
 } from 'store/reducer';
 
 import { MemberInfoType } from 'config/memberType';
+
+import Loader from 'components/shared/loader/loader';
+
 import Member from './member/member';
 
 import './familyTree.scss';
@@ -57,7 +60,7 @@ const FamilyTree: FunctionComponent = () => {
     }
   }, [birthdayBesties]);
 
-  return (
+  return !firstGeneration.length ? <Loader /> : (
     <div id="family-tree" className="members-container">
       {firstGeneration.map((memberInfo) => <Member key={memberInfo.id} info={memberInfo} />)}
     </div>
