@@ -121,7 +121,10 @@ const AccessLimiter: FunctionComponent = ({ children }) => {
 
           loadData(responseJSON.apiKey, responseJSON.spreadsheetId)
             .then(() => resolve(true))
-            .catch((e) => setError(e));
+            .catch((e) => {
+              setError(e);
+              reject();
+            });
         }
       });
   });
