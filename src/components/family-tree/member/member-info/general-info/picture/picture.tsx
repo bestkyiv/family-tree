@@ -15,6 +15,7 @@ const Picture: FunctionComponent<Props> = ({ src, isCollapsed }) => {
     <div className={classnames('picture', { picture_collapsed: isCollapsed })}>
       {src && (
         <img
+          crossOrigin="anonymous"
           className={classnames('picture__img', { picture__img_loaded: isLoaded })}
           src={!isCollapsed || isLoaded ? src : undefined}
           alt="Member"
