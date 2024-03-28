@@ -9,6 +9,7 @@ import MemberInfo from './member-info/memberInfo';
 import ToggleButton from './toggle-button/toggleButton';
 
 import './member.scss';
+import preparePictureParameter from '../../../utils/preparePictureParameter';
 
 type Props = {
   info: MemberInfoType,
@@ -44,7 +45,7 @@ const Member: FunctionComponent<Props> = ({ info, isCollapsed = false }) => {
       })}
     >
       <MemberInfo
-        picture={info.picture}
+        picture={preparePictureParameter(info.picture)}
         name={info.name}
         status={info.status}
         details={info.details}
