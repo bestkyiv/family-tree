@@ -1,5 +1,5 @@
 # Use the official lightweight Node.js 14 image
-FROM node:16-alpine
+FROM node:14-alpine
 
 # Install Python, make, and g++
 RUN apk add --no-cache python3 make g++
