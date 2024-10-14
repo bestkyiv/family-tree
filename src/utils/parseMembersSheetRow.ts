@@ -14,8 +14,6 @@ const telegramRegExp = new RegExp('^@\\w{5,}$');
 const emailRegExp = new RegExp('^[\\w.%+-]+@\\w+\\.\\w{2,}$');
 const phoneRegExp = new RegExp('^380\\d{9}$');
 
-const formatPictureSrc = (link: string) => `https://drive.google.com/uc?id=${/[-\w]{25,}/.exec(link)}&export=download`;
-
 const validate = (string: string, regex: RegExp) => (regex.test(string) ? string : undefined);
 
 const parseMultilineMembershipValue = (cellValue: string): MembershipValueType => cellValue
@@ -53,7 +51,7 @@ const parseMembersSheetRow = (
   }
 
   const picture = row[columnIds.picture];
-  if (picture) memberData.picture = formatPictureSrc(picture);
+  if (picture) memberData.picture = picture;
 
   const parent = row[columnIds.parent];
   if (parent) memberData.parent = parent;
