@@ -1,5 +1,5 @@
 # Use the official lightweight Node.js 14 image
-FROM node:14-alpine
+FROM node:16-alpine
 
 # Install Python, make, and g++
 RUN apk add --no-cache python3 make g++
@@ -19,8 +19,11 @@ COPY . .
 # Build the app for production
 RUN npm run build
 
+# Install `serve` to serve the build files in production
+RUN npm install -g serve
+
 # Expose the port the app will run on
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "start"]
+# Serve the production build
+CMD ["serve", "-s", "build", "-l", "3000"]

@@ -7,7 +7,7 @@ export const preparePictureParameter = (picture?: string): string | undefined =>
 
   const modifiedPicture = picture.replace(
     /drive\.google\.com\/file\/d\/([^/?]+)(?:\/[^?]*)?.*/,
-    'gdrive-proxy.best-kyiv.org/$1',
+    'family.best-kyiv.org/gdp/$1',
   );
 
   return `${modifiedPicture}?api_key=${cookieSpreadsheetId}`;
