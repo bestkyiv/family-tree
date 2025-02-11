@@ -22,9 +22,9 @@ const membersSheet: Sheet = {
     phone: 'Телефон',
     history: 'Історія',
     board: 'Board',
-    projects: 'Проекти',
+    projects: 'Проєкти',
     departments: 'Департаменти',
-    internationalDeps: 'Міжнар депи і проекти',
+    internationalDeps: 'Міжнар депи і проєкти',
     internationalEvents: 'Міжнар івенти',
   },
 };
